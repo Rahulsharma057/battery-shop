@@ -6,6 +6,7 @@ const connectDB = require("./config/db");
 dotenv.config();
 
 const app = express();
+const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 
@@ -23,6 +24,6 @@ const batteryRoutes = require("./routes/batteryRoutes");
 app.use("/api/admin", authRoutes);
 app.use("/api/batteries", batteryRoutes);
 
-app.listen(5000, () => {
-  console.log("🚀 Running on 5000");
+app.listen(PORT, () => {
+  console.log("🚀 Running on", PORT);
 });
