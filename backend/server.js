@@ -12,26 +12,18 @@ connectDB();
 
 console.log("🔥 SERVER STARTED");
 
-// ✅ CORS FIX (IMPORTANT)
+// ✅ CORS CONFIG
 app.use(cors({
   origin: "*",
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 }));
 
-// ✅ HANDLE PRE-FLIGHT REQUESTS (THIS FIXES YOUR ERROR)
-app.options("*", cors());
-
-// ✅ EXTRA SAFETY HEADERS (RENDER FRIENDLY)
+// ✅ SAFE OPTIONS HANDLER (NO "*")
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
   if (req.method === "OPTIONS") {
     return res.sendStatus(200);
   }
-
   next();
 });
 
@@ -43,7 +35,7 @@ app.use(express.urlencoded({ extended: true }));
 const authRoutes = require("./routes/authRoutes");
 const batteryRoutes = require("./routes/batteryRoutes");
 
-// HOME ROUTE
+// HOME
 app.get("/", (req, res) => {
   res.json({
     success: true,
