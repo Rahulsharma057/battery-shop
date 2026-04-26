@@ -132,7 +132,7 @@ const blogs = [
       {
         icon: "build",
         title: "Maintenance Guide",
-        body: "A well-maintained tubular battery can last up to 8 years. Here's what you need to do:",
+        body: "A well-maintained tubular battery can last up to 8 years. Here is what you need to do:",
         steps: [
           {
             step: "Monthly",
@@ -278,27 +278,27 @@ const blogs = [
       {
         icon: "build",
         title: "Battery Care Tips",
-        body: "Extend your car battery's life with these simple habits:",
+        body: "Extend your car battery is life with these simple habits:",
         tips: [
           "Start your car at least once every 3 days if not used regularly",
           "Keep terminals clean and lightly greased with petroleum jelly",
           "Avoid leaving lights or AC on when engine is off",
           "Get battery health tested every 6 months at a service centre",
-          "Replace battery proactively at 4 years — don't wait for a breakdown",
+          "Replace battery proactively at 4 years — do not wait for a breakdown",
         ],
       },
     ],
     conclusion:
       "Amaron and Exide remain the top two choices for most Indian car owners due to their wide availability, strong warranties, and proven track records. For budget buyers, Luminous offers solid performance without breaking the bank.",
     proTip:
-      "Always match the battery group size specified in your car's owner manual. A mismatched battery — even a good one — can underperform or damage your vehicle's electrical system.",
+      "Always match the battery group size specified in your car is owner manual. A mismatched battery — even a good one — can underperform or damage your vehicle is electrical system.",
   },
 
   {
     slug: "tubular-vs-lithium",
     title: "Tubular vs Lithium Battery – Which is Better?",
     subtitle:
-      "An honest, data-backed comparison to help you decide what's right for your home in 2025",
+      "An honest, data-backed comparison to help you decide what is right for your home in 2025",
     category: "Comparison",
     readTime: "7 min read",
     date: "April 2025",
@@ -418,7 +418,7 @@ author: " Girja Sankar Chauhan",
     conclusion:
       "In 2025, lithium batteries are clearly the future — superior in almost every technical metric. But for most Indian households dealing with budget constraints and the need for robust service networks, tubular batteries remain the most practical and dependable choice.",
     proTip:
-      "If you're buying lithium, ensure your existing inverter is compatible with lithium chemistry. Most older inverters require an upgrade or a lithium-compatible model.",
+      "If you are buying lithium, ensure your existing inverter is compatible with lithium chemistry. Most older inverters require an upgrade or a lithium-compatible model.",
   },
 ];
 
@@ -813,7 +813,7 @@ export default function BlogDetailPage() {
             Blog not found
           </Typography>
           <Typography color="text.secondary">
-            The article you're looking for doesn't exist.
+            The article you are looking for does not exist.
           </Typography>
         </Box>
       </Box>
