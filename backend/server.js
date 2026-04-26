@@ -21,6 +21,12 @@ console.log("🔥 SERVER STARTED");
 const authRoutes = require("./routes/authRoutes");
 const batteryRoutes = require("./routes/batteryRoutes");
 
+app.get("/", (req, res) => {
+  res.json({
+    success: true,
+    message: "🔥 Battery Shop API is running",
+  });
+});
 app.use("/api/admin", authRoutes);
 app.use("/api/batteries", batteryRoutes);
 
