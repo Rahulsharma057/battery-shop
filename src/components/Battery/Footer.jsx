@@ -11,7 +11,7 @@ import {
 
 import FacebookIcon from "@mui/icons-material/Facebook";
 import InstagramIcon from "@mui/icons-material/Instagram";
-import TwitterIcon from "@mui/icons-material/Twitter";
+import WhatsappIcon from "@mui/icons-material/WhatsApp"
 import BatteryChargingFullIcon from "@mui/icons-material/BatteryChargingFull";
 
 import Link from "next/link";
@@ -98,8 +98,8 @@ export default function Footer() {
               <IconButton size="small">
                 <InstagramIcon />
               </IconButton>
-              <IconButton size="small">
-                <TwitterIcon />
+              <IconButton href="https://wa.me/919411835880" size="small">
+                <WhatsappIcon />
               </IconButton>
             </Box>
 
@@ -110,10 +110,10 @@ export default function Footer() {
             </Typography>
 
             <Typography fontSize={14} mb={1}>
-              📞 +91 98765 43210
+              📞 +91 9411835880 , +91 8755946495
             </Typography>
 
-            <Typography fontSize={14}>📧 support@batteryshop.com</Typography>
+            <Typography fontSize={14}>📧 chauhanbatterykrj@gmail.com</Typography>
 
             {/* 🌐 Social */}
           </Grid>

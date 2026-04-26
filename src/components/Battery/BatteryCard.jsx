@@ -111,7 +111,7 @@ export default function BatteryCard({ battery, onClick }) {
           <Box sx={{ display: "flex", gap: 0.5, mb: 1 }}>
             <Chip
               icon={<BoltIcon sx={{ fontSize: "12px !important" }} />}
-              label={battery.specs.voltage}
+              label={battery?.specs?.voltage || "N/A"}
               size="small"
               sx={{
                 fontSize: "10px",
@@ -122,7 +122,7 @@ export default function BatteryCard({ battery, onClick }) {
             />
 
             <Chip
-              label={battery.specs.warranty}
+              label={battery?.specs?.warranty || "N/A"}
               size="small"
               sx={{
                 fontSize: "10px",

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useRouter } from "next/navigation";
 
 import {
   Dialog,
@@ -47,6 +48,20 @@ export default function AdminPage() {
   const [deleteId, setDeleteId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const router = useRouter();
+
+  useEffect(() => {
+    const token = localStorage.getItem("adminToken");
+
+    if (!token) {
+      router.push("/admin/login");
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("adminAuth");
+    router.push("/admin/login");
+  };
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -87,6 +102,7 @@ export default function AdminPage() {
       setDeleteId(null);
     }
   };
+
   return (
     <Box sx={{ minHeight: "100vh", bgcolor: "#f5f7fb" }}>
       {/* HEADER */}
@@ -116,25 +132,41 @@ export default function AdminPage() {
           </Box>
 
           {/* RIGHT BUTTON */}
-          <Button
-            variant="contained"
-            startIcon={!isMobile && <AddIcon />}
-            onClick={() => {
-              setSelected(null);
-              setOpen(true);
-            }}
-            sx={{
-              bgcolor: "rgba(70, 191, 43, 0.94)",
-              minWidth: isMobile ? "auto" : 140,
-              px: isMobile ? 1.5 : 2.5,
-              fontSize: isMobile ? 12 : 14,
-              textTransform: "none",
-              borderRadius: 2,
-              whiteSpace: "nowrap",
-            }}
-          >
-            {isMobile ? "Add" : "Add Battery"}
-          </Button>
+          <Box sx={
+            {display:"flex",justifyContent:"center"}
+          }>
+            <Button
+              variant="contained"
+              startIcon={!isMobile && <AddIcon />}
+              onClick={() => {
+                setSelected(null);
+                setOpen(true);
+              }}
+              sx={{
+                bgcolor: "rgba(70, 191, 43, 0.94)",
+                minWidth: isMobile ? "auto" : 140,
+                px: isMobile ? 1.5 : 2.5,
+                fontSize: isMobile ? 12 : 14,
+                textTransform: "none",
+                borderRadius: 2,
+                whiteSpace: "nowrap",
+              }}
+            >
+              {isMobile ? "Add" : "Add Battery"}
+            </Button>
+            <Button
+              variant="outlined"
+              color="error"
+              onClick={handleLogout}
+              sx={{
+                ml: 1,
+                textTransform: "none",
+                borderRadius: 2,
+              }}
+            >
+              Logout
+            </Button>
+          </Box>
         </Toolbar>
       </AppBar>
 
@@ -443,92 +475,91 @@ export default function AdminPage() {
           }}
         />
       </Dialog>
-<Dialog
-  open={confirmOpen}
-  onClose={() => setConfirmOpen(false)}
-  fullWidth
-  maxWidth="xs"
-  PaperProps={{
-    sx: {
-      borderRadius: 3,
-      p: 0,
-    },
-  }}
->
-  <Box sx={{ p: isMobile ? 2 : 3 }}>
-    
-    {/* ICON + TITLE */}
-    <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
-      <Box
-        sx={{
-          width: 36,
-          height: 36,
-          borderRadius: "50%",
-          bgcolor: "#fee2e2",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
+      <Dialog
+        open={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        fullWidth
+        maxWidth="xs"
+        PaperProps={{
+          sx: {
+            borderRadius: 3,
+            p: 0,
+          },
         }}
       >
-        <DeleteIcon sx={{ color: "#dc2626", fontSize: 20 }} />
-      </Box>
+        <Box sx={{ p: isMobile ? 2 : 3 }}>
+          {/* ICON + TITLE */}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+            <Box
+              sx={{
+                width: 36,
+                height: 36,
+                borderRadius: "50%",
+                bgcolor: "#fee2e2",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <DeleteIcon sx={{ color: "#dc2626", fontSize: 20 }} />
+            </Box>
 
-      <Typography
-        variant={isMobile ? "subtitle1" : "h6"}
-        fontWeight={600}
-      >
-        Delete Battery
-      </Typography>
-    </Box>
+            <Typography
+              variant={isMobile ? "subtitle1" : "h6"}
+              fontWeight={600}
+            >
+              Delete Battery
+            </Typography>
+          </Box>
 
-    {/* DESCRIPTION */}
-    <Typography
-      variant="body2"
-      color="text.secondary"
-      sx={{ mb: 3, fontSize: isMobile ? 13 : 14 }}
-    >
-      This action cannot be undone. Are you sure you want to delete this battery?
-    </Typography>
+          {/* DESCRIPTION */}
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{ mb: 3, fontSize: isMobile ? 13 : 14 }}
+          >
+            This action cannot be undone. Are you sure you want to delete this
+            battery?
+          </Typography>
 
-    {/* BUTTONS */}
-    <Box
-      sx={{
-        display: "flex",
-        justifyContent: "flex-end",
-        gap: 1,
-      }}
-    >
-      <Button
-        size="small"
-        variant="outlined"
-        onClick={() => setConfirmOpen(false)}
-        sx={{
-          textTransform: "none",
-          borderRadius: 2,
-          px: 2,
-        }}
-      >
-        Cancel
-      </Button>
+          {/* BUTTONS */}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "flex-end",
+              gap: 1,
+            }}
+          >
+            <Button
+              size="small"
+              variant="outlined"
+              onClick={() => setConfirmOpen(false)}
+              sx={{
+                textTransform: "none",
+                borderRadius: 2,
+                px: 2,
+              }}
+            >
+              Cancel
+            </Button>
 
-      <Button
-        size="small"
-        variant="contained"
-        color="error"
-        onClick={confirmDelete}
-        sx={{
-          textTransform: "none",
-          borderRadius: 2,
-          px: 2,
-          boxShadow: "none",
-        }}
-      >
-        Delete
-      </Button>
-    </Box>
-
-  </Box>
-</Dialog>
+            <Button
+              size="small"
+              variant="contained"
+              color="error"
+              onClick={confirmDelete}
+              sx={{
+                textTransform: "none",
+                borderRadius: 2,
+                px: 2,
+                boxShadow: "none",
+              }}
+            >
+              Delete
+            </Button>
+          </Box>
+        </Box>
+      </Dialog>
       <ToastContainer position="bottom-left" autoClose={2000} />
     </Box>
   );

@@ -123,24 +123,32 @@ export default function Navbar() {
                   </Box>
 
                   <Divider />
-<List>
-  {menuItems.map((item) => (
-    <ListItemButton
-      key={item.name}
-      component={Link}   // ✅ IMPORTANT
-      href={item.path}   // ✅ route
-      onClick={() => {
-        setActive(item.name);
-        setOpen(false);
-      }}
-      sx={{
-        color: active === item.name ? "#16a34a" : "#111",
-      }}
-    >
-      <ListItemText primary={item.name} />
-    </ListItemButton>
-  ))}
-</List>
+                  <List>
+                    {menuItems.map((item) => (
+                      <ListItemButton
+                        key={item.name}
+                        component={Link} // ✅ IMPORTANT
+                        href={item.path} // ✅ route
+                        onClick={() => {
+                          setActive(item.name);
+                          setOpen(false);
+                        }}
+                        sx={{
+                          color: active === item.name ? "#16a34a" : "#111",
+                        }}
+                      >
+                        <ListItemText primary={item.name} />
+                      </ListItemButton>
+                    ))}
+
+                    <ListItemButton
+                      component={Link}
+                      href="/admin/login"
+                      onClick={() => setOpen(false)}
+                    >
+                      <ListItemText primary="Admin Login" />
+                    </ListItemButton>
+                  </List>
                 </Box>
               </Drawer>
             </>
@@ -196,6 +204,27 @@ export default function Navbar() {
                   </Button>
                 </Link>
               ))}
+              <Link href="/admin/login" style={{ textDecoration: "none" }}>
+                <Button
+                  variant="contained"
+                  size="small"
+                  sx={{
+                    ml: 2,
+                    bgcolor: "#16a34a",
+                    textTransform: "none",
+                    fontSize: "13px",
+                    fontWeight: 600,
+                    borderRadius: 2,
+                    px: 2,
+                    boxShadow: "none",
+                    "&:hover": {
+                      bgcolor: "#15803d",
+                    },
+                  }}
+                >
+                  Admin Login
+                </Button>
+              </Link>
             </Box>
           )}
         </Toolbar>

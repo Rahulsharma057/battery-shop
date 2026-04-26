@@ -227,14 +227,14 @@ Message: ${message}`;
                 <Box sx={{ display: "flex", gap: 1.5, alignItems: "center" }}>
                   <PhoneIcon sx={{ color: "#16a34a" }} />
                   <Typography fontSize={14}>
-                    +91 94118 35880 <br /> +91 9821019993
+                    +91 94118 35880 <br /> +91 8755946495
                   </Typography>
                 </Box>
 
                 {/* 📧 EMAIL */}
                 <Box sx={{ display: "flex", gap: 1.5, alignItems: "center" }}>
                   <EmailIcon sx={{ color: "#d32f2f" }} />
-                  <Typography fontSize={14}>support@batteryshop.com</Typography>
+                  <Typography fontSize={14}>chauhanbatterykrj@gmail.com</Typography>
                 </Box>
 
                 {/* 🔥 ACTION BUTTONS */}
