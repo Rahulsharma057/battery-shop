@@ -3,7 +3,7 @@ import HeroSlider from "@/components/Battery/HeroSlider";
 
 import BatteryGrid from "@/components/Battery/BatteryGrid";
 import { Box, Typography } from "@mui/material";
-import AboutSection from "@/components/Battery/Aboutsection";
+import AboutSection from "@/components/Battery/AboutSection";
 import ThankYouSection from "@/components/Battery/ThankYouSection";
 export default function Home() {
   return (
