@@ -12,30 +12,21 @@ connectDB();
 
 console.log("🔥 SERVER STARTED");
 
-// ✅ CORS CONFIG
+// ================= CORS =================
 app.use(cors({
   origin: "*",
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 }));
 
-// ✅ SAFE OPTIONS HANDLER (NO "*")
-app.use((req, res, next) => {
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(200);
-  }
-  next();
-});
-
-// ✅ BODY PARSING
+// ================= BODY =================
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ROUTES
+// ================= ROUTES FIRST =================
 const authRoutes = require("./routes/authRoutes");
 const batteryRoutes = require("./routes/batteryRoutes");
 
-// HOME
 app.get("/", (req, res) => {
   res.json({
     success: true,
@@ -46,7 +37,15 @@ app.get("/", (req, res) => {
 app.use("/api/admin", authRoutes);
 app.use("/api/batteries", batteryRoutes);
 
-// START SERVER
+// ================= FINAL OPTIONS HANDLER (MUST BE LAST) =================
+app.use((req, res, next) => {
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+  next();
+});
+
+// ================= START =================
 app.listen(PORT, () => {
   console.log("🚀 Running on", PORT);
 });
