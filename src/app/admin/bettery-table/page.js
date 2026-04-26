@@ -39,7 +39,7 @@ import BatteryChargingFullIcon from "@mui/icons-material/BatteryChargingFull";
 import BatteryForm from "@/components/Battery/BatteryForm";
 
 export default function AdminPage() {
-  const BASE_URL = "http://localhost:5000/api/batteries";
+  const BASE_URL = "https://battery-shop-od4l.onrender.com/api/batteries";
   const [batteries, setBatteries] = useState([]);
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState(null);
