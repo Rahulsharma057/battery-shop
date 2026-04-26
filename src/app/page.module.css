@@ -1,4 +1,5 @@
 .page {
+<<<<<<< HEAD
   --background: #fafafa;
   --foreground: #fff;
 
@@ -16,10 +17,39 @@
   justify-content: center;
   font-family: var(--font-geist-sans);
   background-color: var(--background);
+=======
+  --gray-rgb: 0, 0, 0;
+  --gray-alpha-200: rgba(var(--gray-rgb), 0.08);
+  --gray-alpha-100: rgba(var(--gray-rgb), 0.05);
+
+  --button-primary-hover: #383838;
+  --button-secondary-hover: #f2f2f2;
+
+  display: grid;
+  grid-template-rows: 20px 1fr 20px;
+  align-items: center;
+  justify-items: center;
+  min-height: 100svh;
+  padding: 80px;
+  gap: 64px;
+  font-family: var(--font-geist-sans);
+}
+
+@media (prefers-color-scheme: dark) {
+  .page {
+    --gray-rgb: 255, 255, 255;
+    --gray-alpha-200: rgba(var(--gray-rgb), 0.145);
+    --gray-alpha-100: rgba(var(--gray-rgb), 0.06);
+
+    --button-primary-hover: #ccc;
+    --button-secondary-hover: #1a1a1a;
+  }
+>>>>>>> 4d4b1b3ed58ab0df9a624ec14027cd4502fd1d8b
 }
 
 .main {
   display: flex;
+<<<<<<< HEAD
   flex: 1;
   width: 100%;
   max-width: 800px;
@@ -59,10 +89,38 @@
 .intro a {
   font-weight: 500;
   color: var(--text-primary);
+=======
+  flex-direction: column;
+  gap: 32px;
+  grid-row-start: 2;
+}
+
+.main ol {
+  font-family: var(--font-geist-mono);
+  padding-left: 0;
+  margin: 0;
+  font-size: 14px;
+  line-height: 24px;
+  letter-spacing: -0.01em;
+  list-style-position: inside;
+}
+
+.main li:not(:last-of-type) {
+  margin-bottom: 8px;
+}
+
+.main code {
+  font-family: inherit;
+  background: var(--gray-alpha-100);
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-weight: 600;
+>>>>>>> 4d4b1b3ed58ab0df9a624ec14027cd4502fd1d8b
 }
 
 .ctas {
   display: flex;
+<<<<<<< HEAD
   flex-direction: row;
   width: 100%;
   max-width: 440px;
@@ -81,17 +139,61 @@
   transition: 0.2s;
   cursor: pointer;
   width: fit-content;
+=======
+  gap: 16px;
+}
+
+.ctas a {
+  appearance: none;
+  border-radius: 128px;
+  height: 48px;
+  padding: 0 20px;
+  border: none;
+  border: 1px solid transparent;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  line-height: 20px;
+>>>>>>> 4d4b1b3ed58ab0df9a624ec14027cd4502fd1d8b
   font-weight: 500;
 }
 
 a.primary {
+<<<<<<< HEAD
   background: var(--text-primary);
+=======
+  background: var(--foreground);
+>>>>>>> 4d4b1b3ed58ab0df9a624ec14027cd4502fd1d8b
   color: var(--background);
   gap: 8px;
 }
 
 a.secondary {
+<<<<<<< HEAD
   border-color: var(--button-secondary-border);
+=======
+  border-color: var(--gray-alpha-200);
+  min-width: 180px;
+}
+
+.footer {
+  grid-row-start: 3;
+  display: flex;
+  gap: 24px;
+}
+
+.footer a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.footer img {
+  flex-shrink: 0;
+>>>>>>> 4d4b1b3ed58ab0df9a624ec14027cd4502fd1d8b
 }
 
 /* Enable hover only on non-touch devices */
@@ -105,6 +207,7 @@ a.secondary {
     background: var(--button-secondary-hover);
     border-color: transparent;
   }
+<<<<<<< HEAD
 }
 
 @media (max-width: 600px) {
@@ -120,6 +223,47 @@ a.secondary {
     font-size: 32px;
     line-height: 40px;
     letter-spacing: -1.92px;
+=======
+
+  .footer a:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+}
+
+@media (max-width: 600px) {
+  .page {
+    padding: 32px;
+    padding-bottom: 80px;
+  }
+
+  .main {
+    align-items: center;
+  }
+
+  .main ol {
+    text-align: center;
+  }
+
+  .ctas {
+    flex-direction: column;
+  }
+
+  .ctas a {
+    font-size: 14px;
+    height: 40px;
+    padding: 0 16px;
+  }
+
+  a.secondary {
+    min-width: auto;
+  }
+
+  .footer {
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+>>>>>>> 4d4b1b3ed58ab0df9a624ec14027cd4502fd1d8b
   }
 }
 
@@ -127,6 +271,7 @@ a.secondary {
   .logo {
     filter: invert();
   }
+<<<<<<< HEAD
 
   .page {
     --background: #000;
@@ -139,4 +284,6 @@ a.secondary {
     --button-secondary-hover: #1a1a1a;
     --button-secondary-border: #1a1a1a;
   }
+=======
+>>>>>>> 4d4b1b3ed58ab0df9a624ec14027cd4502fd1d8b
 }
