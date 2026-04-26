@@ -1,16 +1,10 @@
 const express = require("express");
-const jwt = require("jsonwebtoken");
-
 const router = express.Router();
 
 console.log("🔥 AUTH ROUTES ACTIVE");
 
 router.post("/login", (req, res) => {
-  console.log("🔥 LOGIN API HIT");
-  console.log("BODY RECEIVED:", req.body);
-
-  const email = req.body?.email;
-  const password = req.body?.password;
+  const { email, password } = req.body;
 
   if (!email || !password) {
     return res.status(400).json({
@@ -22,7 +16,7 @@ router.post("/login", (req, res) => {
   if (email === "admin@gmail.com" && password === "admin123") {
     return res.json({
       success: true,
-      token: "demo-token",
+      token: "admin-token",
     });
   }
 

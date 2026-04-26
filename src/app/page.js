@@ -1,18 +1,3 @@
-<<<<<<< HEAD
-
-import HeroCarousel from "@/comonent/MainAd";
-import ProductGrid from "@/comonent/ProductGrid";
-
-export default function Home() {
-  return (
-    <div>
-      
-      <HeroCarousel />
-      <ProductGrid/>
-    </div>
-  );
-}
-=======
 "use client";
 import HeroSlider from "@/components/Battery/HeroSlider";
 
@@ -38,4 +23,3 @@ export default function Home() {
     </>
   );
 }
->>>>>>> 4d4b1b3ed58ab0df9a624ec14027cd4502fd1d8b

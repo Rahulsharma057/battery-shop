@@ -1,16 +1,3 @@
-<<<<<<< HEAD
-import Navbar from "@/comonent/Navbar";
-import { CartProvider } from "@/context/CardContext";
-
-export default function RootLayout({ children }) {
-  return (
-    <html lang="en">
-      <body>
-        <CartProvider>
-          <Navbar />
-          {children}
-        </CartProvider>
-=======
 "use client";
 
 import { ThemeProvider, createTheme } from "@mui/material/styles";
@@ -45,7 +32,6 @@ export default function RootLayout({ children }) {
           {!isAdmin && <Footer />}
 
         </ThemeProvider>
->>>>>>> 4d4b1b3ed58ab0df9a624ec14027cd4502fd1d8b
       </body>
     </html>
   );
