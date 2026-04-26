@@ -4,6 +4,7 @@ const router = express.Router();
 console.log("🔥 AUTH ROUTES ACTIVE");
 
 router.post("/login", (req, res) => {
+  console.log("🔥 LOGIN ROUTE HIT");
   const { email, password } = req.body;
 
   if (!email || !password) {

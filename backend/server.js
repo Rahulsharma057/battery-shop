@@ -1,4 +1,5 @@
 const express = require("express");
+console.log("🚀 SERVER FILE LOADED");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const connectDB = require("./config/db");
