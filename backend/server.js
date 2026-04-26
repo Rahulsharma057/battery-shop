@@ -1,5 +1,4 @@
 const express = require("express");
-console.log("🚀 SERVER FILE LOADED");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const connectDB = require("./config/db");
@@ -13,18 +12,23 @@ connectDB();
 
 console.log("🔥 SERVER STARTED");
 
-// ================= CORS =================
-app.use(cors({
-  origin: "*",
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-}));
+// ✅ CORS FIX (IMPORTANT FOR VERCEL + RENDER)
+app.use(
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "https://battery-shop-wogs-2wuqh7vw5-rahulsharma057s-projects.vercel.app",
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
-// ================= BODY =================
+// ✅ body parser
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ================= ROUTES FIRST =================
+// ✅ routes
 const authRoutes = require("./routes/authRoutes");
 const batteryRoutes = require("./routes/batteryRoutes");
 
@@ -38,15 +42,9 @@ app.get("/", (req, res) => {
 app.use("/api/admin", authRoutes);
 app.use("/api/batteries", batteryRoutes);
 
-// ================= FINAL OPTIONS HANDLER (MUST BE LAST) =================
-app.use((req, res, next) => {
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(200);
-  }
-  next();
-});
+// ✅ IMPORTANT: fallback OPTIONS (must be AFTER routes)
+app.options("*", cors());
 
-// ================= START =================
 app.listen(PORT, () => {
   console.log("🚀 Running on", PORT);
 });

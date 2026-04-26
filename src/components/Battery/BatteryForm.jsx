@@ -98,9 +98,11 @@ export default function BatteryForm({ editData, onSuccess }) {
     };
 
     try {
-      const url = editData
-        ? `http://localhost:5000/api/batteries/${editData._id}`
-        : "http://localhost:5000/api/batteries";
+      const BASE_URL = "https://battery-shop-od4l.onrender.com/api/batteries";
+
+const url = editData
+  ? `${BASE_URL}/${editData._id}`
+  : BASE_URL;
 
       const method = editData ? "PUT" : "POST";
 
