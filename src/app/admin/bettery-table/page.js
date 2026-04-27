@@ -39,7 +39,7 @@ import BatteryChargingFullIcon from "@mui/icons-material/BatteryChargingFull";
 import BatteryForm from "@/components/Battery/BatteryForm";
 
 export default function AdminPage() {
- const BASE_URL = "https://battery-shop-od4l.onrender.com/api/batteries";
+const BASE_URL = "https://battery-shop-backend-ocb4.onrender.com/api/batteries";;
   const [batteries, setBatteries] = useState([]);
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState(null);
@@ -58,11 +58,10 @@ export default function AdminPage() {
     }
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem("adminAuth");
-    router.push("/admin/login");
-  };
-
+const handleLogout = () => {
+  localStorage.removeItem("adminToken"); 
+  router.push("/admin/login");
+};
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -72,13 +71,19 @@ export default function AdminPage() {
       .includes(search.toLowerCase()),
   );
 
-  const fetchData = async () => {
-    setLoading(true);
+const fetchData = async () => {
+  setLoading(true);
+
+  try {
     const res = await fetch(BASE_URL);
     const data = await res.json();
     setBatteries(data);
-    setLoading(false);
-  };
+  } catch (err) {
+    toast.error("Failed to load data ❌");
+  }
+
+  setLoading(false);
+};
 
   useEffect(() => {
     fetchData();
