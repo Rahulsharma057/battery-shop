@@ -10,7 +10,7 @@ export default function BatteryGrid() {
   const [selected, setSelected] = useState(null);
 
   useEffect(() => {
-    fetch("https://battery-shop-od4l.onrender.com/api/batteries")
+   fetch("https://battery-shop-backend-ocb4.onrender.com/api/batteries")
       .then((res) => res.json())
       .then((data) => {
         console.log("🔥 API DATA:", data);
