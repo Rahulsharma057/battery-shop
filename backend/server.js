@@ -8,31 +8,35 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// 🔥 अगर DB use karna ho to enable karo
+// 🔥 अगर DB use karna ho तो enable करो
 // connectDB();
 
 console.log("🔥 SERVER STARTED");
 
-// ✅ SIMPLE & SAFE CORS (recommended)
+// ✅ ✅ FINAL CORS FIX (VERY IMPORTANT)
 app.use(
   cors({
-    origin: [
-      "http://localhost:3000",
-      "https://battery-shop-wogs-fe595qpbc-rahulsharma057s-projects.vercel.app/admin/login",
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    origin: true, // 🔥 sabko allow karega (Vercel preview bhi)
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
-// ✅ body parser
+
+// ✅ Preflight request handle (OPTIONS fix)
+app.options("*", (req, res) => {
+  return res.sendStatus(200);
+});
+
+// ✅ Body parser
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ✅ routes
+// ✅ Routes
 const authRoutes = require("./routes/authRoutes");
 const batteryRoutes = require("./routes/batteryRoutes");
 
-// ✅ health check
+// ✅ Health check
 app.get("/", (req, res) => {
   res.json({
     success: true,
@@ -44,10 +48,7 @@ app.get("/", (req, res) => {
 app.use("/api/admin", authRoutes);
 app.use("/api/batteries", batteryRoutes);
 
-// ❌ IMPORTANT: ye line hata di (ye crash kar rahi thi)
-// app.options("*", cors());
-
-// ✅ global error handler (extra safety)
+// ✅ Global error handler
 app.use((err, req, res, next) => {
   console.error("GLOBAL ERROR:", err.message);
   res.status(500).json({
@@ -56,7 +57,7 @@ app.use((err, req, res, next) => {
   });
 });
 
-// ✅ start server
+// ✅ Start server
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
