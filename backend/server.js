@@ -16,11 +16,14 @@ console.log("🔥 SERVER STARTED");
 // ✅ SIMPLE & SAFE CORS (recommended)
 app.use(
   cors({
-    origin: true, // sabko allow karega (Vercel preview bhi)
+    origin: [
+      "http://localhost:3000",
+      "https://battery-shop-wogs-fe595qpbc-rahulsharma057s-projects.vercel.app/admin/login",
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
 );
-
 // ✅ body parser
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
