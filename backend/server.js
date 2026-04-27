@@ -8,19 +8,26 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-connectDB();
+//connectDB();
 
 console.log("🔥 SERVER STARTED");
 
 // ✅ CORS FIX (IMPORTANT FOR VERCEL + RENDER)
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://battery-shop-wogs-fe595qpbc-rahulsharma057s-projects.vercel.app",
+];
+
 app.use(
   cors({
-    origin: [
-      "http://localhost:3000",
-      "https://battery-shop-wogs-2wuqh7vw5-rahulsharma057s-projects.vercel.app",
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
   })
 );
 

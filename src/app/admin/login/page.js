@@ -26,35 +26,35 @@ export default function AdminLogin() {
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
-  setLoading(true);
+    setLoading(true);
 
-  try {
-    const res = await fetch(
-      "https://battery-shop-od4l.onrender.com/api/admin/login",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+    try {
+      const res = await fetch(
+        "https://battery-shop-backend-ocb4.onrender.com/api/admin/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
         },
-        body: JSON.stringify({ email, password }),
+      );
+
+      const data = await res.json();
+
+      if (data.success) {
+        localStorage.setItem("adminToken", data.token);
+        router.push("/admin/bettery-table");
+      } else {
+        alert("Invalid credentials");
       }
-    );
-
-    const data = await res.json();
-
-    if (data.success) {
-      localStorage.setItem("adminToken", data.token);
-      router.push("/admin/bettery-table");
-    } else {
-      alert("Invalid credentials");
+    } catch (err) {
+      console.log(err);
+      alert("Server error");
     }
-  } catch (err) {
-    console.log(err);
-    alert("Server error");
-  }
 
-  setLoading(false);
-};
+    setLoading(false);
+  };
 
   return (
     <Box

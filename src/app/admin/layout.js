@@ -7,7 +7,7 @@ export default function AdminLayout({ children }) {
   const router = useRouter();
 
   useEffect(() => {
-    const auth = localStorage.getItem("adminAuth");
+    const auth = localStorage.getItem("adminToken");
 
     if (!auth) {
       router.push("/admin/login");
