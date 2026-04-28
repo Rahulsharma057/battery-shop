@@ -187,7 +187,7 @@ Message: ${message}`;
                   />
                   <Box>
                     <Typography fontWeight={600} fontSize={14}>
-                      Girija Sankar Chauhan
+                      Satendra Singh Chauhan
                     </Typography>
                     <Typography fontSize={12} color="text.secondary">
                       Owner - CHAUHAN BATTERY HOUSE

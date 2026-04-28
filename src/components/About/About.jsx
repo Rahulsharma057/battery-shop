@@ -65,7 +65,7 @@ export default function AboutPage() {
               />
 
               <Box>
-                <Typography fontWeight={600}>Girija Sankar Chauhan</Typography>
+                <Typography fontWeight={600}>Manvendra Chauhan</Typography>
                 <Typography variant="body2" color="text.secondary">
                   Battery Expert & Consultant
                 </Typography>
