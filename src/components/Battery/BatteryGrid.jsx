@@ -16,6 +16,7 @@ console.log(process.env.NEXT_PUBLIC_API_URL);
         const res = await fetch(BASE_URL);
         const data = await res.json();
 
+
         console.log("🔥 API DATA:", data);
         setBatteries(data);
       } catch (err) {
@@ -24,7 +25,7 @@ console.log(process.env.NEXT_PUBLIC_API_URL);
     };
 
     fetchData();
-  }, [BASE_URL]); // ✅ add dependency
+  }, [BASE_URL]); 
   return (
     <>
       <Grid container spacing={3}>
