@@ -39,7 +39,7 @@ import BatteryChargingFullIcon from "@mui/icons-material/BatteryChargingFull";
 import BatteryForm from "@/components/Battery/BatteryForm";
 
 export default function AdminPage() {
-const BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/api/batteries`;
+const BASE_URL = `https://battery-shop-backend-ocb4.onrender.com/api/batteries`;
   const [batteries, setBatteries] = useState([]);
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState(null);
@@ -76,6 +76,7 @@ const fetchData = async () => {
 
   try {
     const res = await fetch(BASE_URL);
+    console.log(res);
     const data = await res.json();
     setBatteries(data);
   } catch (err) {
