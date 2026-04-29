@@ -1,5 +1,5 @@
 const Battery = require("../models/Battery");
-
+console.log("🔥 API HIT");
 /* ---------------- FEATURES ---------------- */
 const parseFeatures = (features) => {
   if (!features) return [];
@@ -50,7 +50,12 @@ const getBatteries = async (req, res) => {
   }
 };
 
-/* ---------------- CREATE ---------------- */
+const getImage = (req) => {
+  if (req.file) return req.file.path || req.file.secure_url;
+  if (req.body.image) return req.body.image;
+  return "";
+};
+
 const addBattery = async (req, res) => {
   try {
     const battery = new Battery({
@@ -62,7 +67,7 @@ const addBattery = async (req, res) => {
       reviews: req.body.reviews,
       offerValidTill: req.body.offerValidTill,
 
-      image: req.file?.path || req.body.image || "",
+      image: getImage(req), // 👈 SAME LOGIC FOR ADD + UPDATE
 
       description: req.body.description,
       features: parseFeatures(req.body.features),
@@ -72,12 +77,15 @@ const addBattery = async (req, res) => {
     const saved = await battery.save();
     res.json(saved);
   } catch (err) {
+    console.log("❌ ADD ERROR:", err);
     res.status(500).json({ message: err.message });
   }
 };
-
 /* ---------------- UPDATE ---------------- */
 const updateBattery = async (req, res) => {
+  console.log("👉 PARAM ID:", req.params.id);
+  console.log("👉 BODY:", req.body);
+  console.log("👉 FILE:", req.file);
   try {
     const updateData = {
       name: req.body.name,
@@ -87,22 +95,22 @@ const updateBattery = async (req, res) => {
       rating: req.body.rating,
       reviews: req.body.reviews,
       offerValidTill: req.body.offerValidTill,
+
       description: req.body.description,
       features: parseFeatures(req.body.features),
       specs: safeSpecs(req.body.specs),
     };
 
     if (req.file) {
-      updateData.image = req.file.path;
+      updateData.image =
+        req.file.path || req.file.secure_url || req.file.url || "";
     } else if (req.body.image) {
       updateData.image = req.body.image;
     }
 
-    const updated = await Battery.findByIdAndUpdate(
-      req.params.id,
-      updateData,
-      { new: true }
-    );
+    const updated = await Battery.findByIdAndUpdate(req.params.id, updateData, {
+      new: true,
+    });
 
     if (!updated) {
       return res.status(404).json({ message: "Battery not found" });
@@ -110,7 +118,8 @@ const updateBattery = async (req, res) => {
 
     res.json(updated);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error("❌ UPDATE ERROR FULL:", err);
+    res.status(500).json({ message: err.message || "Update failed" });
   }
 };
 

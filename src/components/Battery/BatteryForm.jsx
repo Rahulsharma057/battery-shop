@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
 
 import {
   Box,
@@ -12,6 +13,7 @@ import {
   Container,
   Grid,
   Paper,
+  Stack,
 } from "@mui/material";
 
 export default function BatteryForm({ editData, onSuccess }) {
@@ -34,6 +36,7 @@ export default function BatteryForm({ editData, onSuccess }) {
 
   const [form, setForm] = useState(initialState);
 
+  const [formErrors, setFormErrors] = useState({});
   // ✅ Prefill
   useEffect(() => {
     if (editData) {
@@ -58,6 +61,28 @@ export default function BatteryForm({ editData, onSuccess }) {
     }
   }, [editData]);
 
+  const validateForm = () => {
+    let errors = {};
+
+    if (!form.name) errors.name = "Name is required";
+    if (!form.price) errors.price = "Price is required";
+    if (!form.originalPrice)
+      errors.originalPrice = "Original price is required";
+    if (!form.offerValidTill) errors.offerValidTill = "Offer date is required";
+
+    if (
+      form.price &&
+      form.originalPrice &&
+      Number(form.price) > Number(form.originalPrice)
+    ) {
+      errors.price = "Price cannot be greater than original price";
+    }
+
+    setFormErrors(errors);
+
+    return Object.keys(errors).length === 0;
+  };
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -77,7 +102,7 @@ export default function BatteryForm({ editData, onSuccess }) {
 
   const resetForm = () => setForm(initialState);
 
-  const handleSubmit = async () => {
+  /*   const handleSubmit = async () => {
     const data = {
       name: form.name,
       price: Number(form.price),
@@ -127,6 +152,64 @@ export default function BatteryForm({ editData, onSuccess }) {
       // ❌ ERROR TOAST
       toast.error("Something went wrong ❌");
     }
+  }; */
+
+  const handleSubmit = async () => {
+    if (!validateForm()) {
+      toast.error("Please fill required fields errors ❌");
+      return;
+    }
+    try {
+      const formData = new FormData();
+
+      formData.append("name", form.name);
+      formData.append("price", form.price);
+      formData.append("originalPrice", form.originalPrice);
+      formData.append("discount", form.discount || 0);
+      formData.append("rating", form.rating || 0);
+      formData.append("reviews", form.reviews || 0);
+      formData.append("offerValidTill", form.offerValidTill);
+      formData.append("description", form.description);
+
+      // ✅ features
+      if (form.features) {
+        form.features
+          .split(",")
+          .forEach((f) => formData.append("features", f.trim()));
+      }
+
+      // ✅ IMPORTANT (specs JSON me bhejna)
+      formData.append(
+        "specs",
+        JSON.stringify({
+          voltage: form.voltage,
+          capacity: form.capacity,
+          warranty: form.warranty,
+          type: form.type,
+        }),
+      );
+
+      // ✅ image file
+      if (form.image instanceof File) {
+        formData.append("image", form.image);
+      }
+      const BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/api/batteries`;
+      const url = editData ? `${BASE_URL}/${editData._id}` : BASE_URL;
+      const method = editData ? "PUT" : "POST";
+
+      await fetch(url, {
+        method,
+        body: formData, // ❗ NO headers
+      });
+
+      toast.success(editData ? "Updated ✅" : "Added ✅");
+
+      resetForm();
+      if (onSuccess) onSuccess();
+    } catch (err) {
+      console.log(err);
+      toast.error("Upload failed ❌");
+    }
   };
 
   return (
@@ -150,6 +233,8 @@ export default function BatteryForm({ editData, onSuccess }) {
                 name="name"
                 value={form.name}
                 onChange={handleChange}
+                error={!!formErrors.name}
+                helperText={formErrors.name}
               />
             </Grid>
 
@@ -160,6 +245,8 @@ export default function BatteryForm({ editData, onSuccess }) {
                 name="price"
                 value={form.price}
                 onChange={handleChange}
+                error={!!formErrors.price}
+                helperText={formErrors.price}
               />
             </Grid>
 
@@ -170,6 +257,8 @@ export default function BatteryForm({ editData, onSuccess }) {
                 name="originalPrice"
                 value={form.originalPrice}
                 onChange={handleChange}
+                  error={!!formErrors.originalPrice}
+  helperText={formErrors.originalPrice}
               />
             </Grid>
 
@@ -205,21 +294,57 @@ export default function BatteryForm({ editData, onSuccess }) {
             <Grid item xs={6} md={3}>
               <TextField
                 fullWidth
+                type="date"
                 label="Offer Valid Till"
-                name="offerValidTill"
+                InputLabelProps={{ shrink: true }}
                 value={form.offerValidTill}
-                onChange={handleChange}
+                onChange={(e) =>
+                  setForm({ ...form, offerValidTill: e.target.value })
+                }
+                error={!!formErrors.offerValidTill}
+                helperText={formErrors.offerValidTill}
+                sx={{
+                  "& input": {
+                    cursor: "pointer",
+                  },
+                }}
               />
             </Grid>
 
             <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Image URL"
-                name="image"
-                value={form.image}
-                onChange={handleChange}
-              />
+              <Stack spacing={1}>
+                <Typography fontSize={14} fontWeight={600}>
+                  Upload Battery Image
+                </Typography>
+
+                <Button
+                  variant="outlined"
+                  component="label"
+                  startIcon={<PhotoCameraIcon />}
+                  sx={{
+                    textTransform: "none",
+                    borderRadius: 2,
+                    py: 1,
+                  }}
+                >
+                  Choose Image
+                  <input
+                    hidden
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) =>
+                      setForm({ ...form, image: e.target.files[0] })
+                    }
+                  />
+                </Button>
+
+                {/* Preview */}
+                {form.image && (
+                  <Typography fontSize={12} color="green">
+                    Selected: {form.image.name}
+                  </Typography>
+                )}
+              </Stack>
             </Grid>
 
             <Grid item xs={12}>
@@ -236,6 +361,8 @@ export default function BatteryForm({ editData, onSuccess }) {
 
             <Grid item xs={12}>
               <TextField
+              multiline
+              rows={3}
                 fullWidth
                 label="Features (comma separated)"
                 name="features"

@@ -8,17 +8,23 @@ import BatteryModal from "./BatteryModal";
 export default function BatteryGrid() {
   const [batteries, setBatteries] = useState([]);
   const [selected, setSelected] = useState(null);
-
+  const BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/api/batteries`;
+console.log(process.env.NEXT_PUBLIC_API_URL);
   useEffect(() => {
-   fetch("https://battery-shop-backend-ocb4.onrender.com/api/batteries")
-      .then((res) => res.json())
-      .then((data) => {
+    const fetchData = async () => {
+      try {
+        const res = await fetch(BASE_URL);
+        const data = await res.json();
+
         console.log("🔥 API DATA:", data);
         setBatteries(data);
-      })
-      .catch((err) => console.log(err));
-  }, []);
+      } catch (err) {
+        console.log("❌ FETCH ERROR:", err);
+      }
+    };
 
+    fetchData();
+  }, [BASE_URL]); // ✅ add dependency
   return (
     <>
       <Grid container spacing={3}>

@@ -10,7 +10,7 @@ const batterySchema = new mongoose.Schema(
     reviews: { type: Number, default: 0 },
     offerValidTill: String,
 
-    image: { type: String, required: true },
+image: { type: String, default: "" },
 
     description: String,
 

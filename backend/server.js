@@ -22,10 +22,7 @@ app.use(
   })
 );
 
-// ✅ Preflight request handle (OPTIONS fix)
-app.options("*", (req, res) => {
-  return res.sendStatus(200);
-});
+
 
 // ✅ Body parser
 app.use(express.json());
@@ -49,7 +46,8 @@ app.use("/api/batteries", batteryRoutes);
 
 // ✅ Global error handler
 app.use((err, req, res, next) => {
-  console.error("GLOBAL ERROR:", err.message);
+  console.error("🔥 FULL ERROR:", err);
+console.error("🔥 STACK:", err?.stack);
   res.status(500).json({
     success: false,
     message: "Internal Server Error",

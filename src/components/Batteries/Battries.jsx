@@ -66,8 +66,8 @@ export default function BatteriesPage() {
               <Select value={voltage} onChange={(e) => setVoltage(e.target.value)}>
                 <MenuItem value="">All</MenuItem>
                 <MenuItem value="12V">12V</MenuItem>
-                <MenuItem value="17V">17V</MenuItem>
-                <MenuItem value="24V">24V</MenuItem>
+              {/*   <MenuItem value="17V">17V</MenuItem>
+                <MenuItem value="24V">24V</MenuItem> */}
               </Select>
             </FormControl>
           </Grid>
