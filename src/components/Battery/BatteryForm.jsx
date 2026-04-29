@@ -193,7 +193,7 @@ export default function BatteryForm({ editData, onSuccess }) {
       if (form.image instanceof File) {
         formData.append("image", form.image);
       }
-      const BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/api/batteries`;
+      const BASE_URL = `https://battery-shop-backend-ocb4.onrender.com/api/batteries`;
       const url = editData ? `${BASE_URL}/${editData._id}` : BASE_URL;
       const method = editData ? "PUT" : "POST";
 

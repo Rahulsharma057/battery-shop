@@ -8,7 +8,7 @@ import BatteryModal from "./BatteryModal";
 export default function BatteryGrid() {
   const [batteries, setBatteries] = useState([]);
   const [selected, setSelected] = useState(null);
-  const BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/api/batteries`;
+  const BASE_URL = `https://battery-shop-backend-ocb4.onrender.com/api/batteries`;
 console.log(process.env.NEXT_PUBLIC_API_URL);
   useEffect(() => {
     const fetchData = async () => {
