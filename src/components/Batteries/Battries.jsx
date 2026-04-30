@@ -11,23 +11,41 @@ import {
   MenuItem,
 } from "@mui/material";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import BatteryCard from "../Battery/BatteryCard";
-import BatteryModal from "../Battery/BatteryModal"; // ✅ add this
-import batteries from "@/data/batteries";
+import BatteryModal from "../Battery/BatteryModal";
 
 export default function BatteriesPage() {
+  const [batteries, setBatteries] = useState([]); // ✅ API DATA
   const [type, setType] = useState("");
   const [voltage, setVoltage] = useState("");
   const [sort, setSort] = useState("");
-  const [selected, setSelected] = useState(null); // ✅ IMPORTANT
+  const [selected, setSelected] = useState(null);
 
+  const BASE_URL = "https://battery-shop-backend-ocb4.onrender.com/api/batteries";
+
+  // ✅ FETCH API
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await fetch(BASE_URL);
+        const data = await res.json();
+        setBatteries(data);
+      } catch (err) {
+        console.log("❌ FETCH ERROR:", err);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // ✅ FILTER + SORT
   const filteredBatteries = batteries
     .filter((b) => {
       let match = true;
 
-      if (type && b.specs.type !== type) match = false;
-      if (voltage && b.specs.voltage !== voltage) match = false;
+      if (type && b.specs?.type !== type) match = false;
+      if (voltage && b.specs?.voltage !== voltage) match = false;
 
       return match;
     })
@@ -66,8 +84,6 @@ export default function BatteriesPage() {
               <Select value={voltage} onChange={(e) => setVoltage(e.target.value)}>
                 <MenuItem value="">All</MenuItem>
                 <MenuItem value="12V">12V</MenuItem>
-              {/*   <MenuItem value="17V">17V</MenuItem>
-                <MenuItem value="24V">24V</MenuItem> */}
               </Select>
             </FormControl>
           </Grid>
@@ -87,10 +103,10 @@ export default function BatteriesPage() {
         {/* GRID */}
         <Grid container spacing={3}>
           {filteredBatteries.map((battery) => (
-            <Grid item xs={6} sm={6} md={4} lg={3} key={battery.id}>
+            <Grid item xs={6} sm={6} md={4} lg={3} key={battery._id}>
               <BatteryCard
                 battery={battery}
-                onClick={() => setSelected(battery)} // ✅ FIX
+                onClick={() => setSelected(battery)}
               />
             </Grid>
           ))}
