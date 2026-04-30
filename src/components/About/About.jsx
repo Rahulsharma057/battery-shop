@@ -60,7 +60,7 @@ export default function AboutPage() {
               }}
             >
               <Avatar
-                src="https://media.licdn.com/dms/image/v2/C5616AQGgvPYCMAIL_g/profile-displaybackgroundimage-shrink_200_800/profile-displaybackgroundimage-shrink_200_800/0/1640192934357?e=2147483647&v=beta&t=kZG2SzIFQ_2FbA_-Q7eS5aIDUilfrXGUzQ4b44s50g8"
+                src="images/manvendra chuhan.jpeg"
                 sx={{ width: 60, height: 60 }}
               />
 

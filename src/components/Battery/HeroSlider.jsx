@@ -16,16 +16,16 @@ const images = [
   {
     label: "Power Your Drive",
     imgPath:
-      "https://www.su-kam.com/wp-content/uploads/2025/09/1920x1080-1520x820.webp",
+       "images/image1.png",
   },
   {
     label: "Inverter Backup Sale",
     imgPath:
-      "/images/img2.jpeg",},
+      "images/IMAGE2.png",},
   {
     label: "Lithium Power",
     imgPath:
-      "/images/img3.jpeg",
+      "/images/IMAGE3.png",
   },
 ];
 

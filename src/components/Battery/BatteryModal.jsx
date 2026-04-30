@@ -64,7 +64,7 @@ ${Object.entries(battery.specs)
 -------------------------
 *Please contact customer for order confirmation.*`;
 
-  const url = `https://wa.me/919761709408?text=${encodeURIComponent(text)}`;
+  const url = `https://wa.me/919411835880?text=${encodeURIComponent(text)}`;
   window.open(url, "_blank");
 };
 

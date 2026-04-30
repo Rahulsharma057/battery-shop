@@ -178,7 +178,7 @@ Message: ${message}`;
                   }}
                 >
                   <Avatar
-                    src="https://media.licdn.com/dms/image/v2/C5603AQEH4kfSmjoxAQ/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1589999537705?e=2147483647&v=beta&t=gG6Ic5PV-Iz8wLMGJy8V3RuLNX9IgTkiIZgiozTDuN0"
+                    src="images/satenrasinghchauhan.jpeg"
                     sx={{
                       width: 55,
                       height: 55,

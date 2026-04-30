@@ -893,7 +893,7 @@ export default function BlogDetailPage() {
               {blog.author}
             </Typography>
               <Typography>
-                Owner - CHAUHAN BATTERY HOUSE
+                 CHAUHAN BATTERY HOUSE
               </Typography>
             </Box>
           </Box>
