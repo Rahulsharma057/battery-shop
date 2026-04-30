@@ -12,12 +12,12 @@ export default function AboutSection() {
           <Grid item xs={12} md={6}>
             <Box
               component="img"
-              src="/images/img1.jpeg" // ✅ apni image yaha lagao
+              src="images/IMAGE4.png"
               alt="Battery Shop"
               sx={{
                 width: "100%",
                 height: { xs: 220, md: 370 },
-                objectFit: "cover",
+                objectFit: "contain",
                 borderRadius: 3,
                 boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
               }}
