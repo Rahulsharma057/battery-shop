@@ -45,31 +45,16 @@ export default function BatteryForm({ editData, onSuccess }) {
   const defaultVoltages = ["12V", "24V", "48V"];
 const [voltageOptions, setVoltageOptions] = useState(defaultVoltages);
 
-useEffect(() => {
-  try {
-    const saved = JSON.parse(localStorage.getItem("voltages")) || [];
-    setVoltageOptions([...new Set([...defaultVoltages, ...saved])]);
-  } catch {
-    setVoltageOptions(defaultVoltages);
-  }
-}, []);
+
   const defaultCapacities = {
     "12V": ["35Ah", "45Ah", "60Ah", "75Ah", "100Ah"],
     "24V": ["100Ah", "120Ah", "150Ah", "180Ah"],
     "48V": ["150Ah", "180Ah", "200Ah", "220Ah"],
   };
 const [capacityOptionsByVoltage, setCapacityOptionsByVoltage] = useState(defaultCapacities);
-
-useEffect(() => {
-  const saved = JSON.parse(localStorage.getItem("capacities")) || {};
-  setCapacityOptionsByVoltage({ ...defaultCapacities, ...saved });
-}, []);
+const defaultTypes = ["Lead Acid", "Lithium", "Gel"];
 const [typeOptions, setTypeOptions] = useState(defaultTypes);
 
-useEffect(() => {
-  const saved = JSON.parse(localStorage.getItem("types")) || [];
-  setTypeOptions([...new Set([...defaultTypes, ...saved])]);
-}, []);
   const [newVoltage, setNewVoltage] = useState("");
   const [showAddVoltage, setShowAddVoltage] = useState(false);
   const capacityOptions = useMemo(() => {
@@ -283,6 +268,39 @@ useEffect(() => {
       setForm((prev) => ({ ...prev, discount: 0 }));
     }
   }, [form.price, form.originalPrice]);
+
+
+  useEffect(() => {
+  if (typeof window === "undefined") return;
+
+  const saved = localStorage.getItem("voltages");
+  const parsed = saved ? JSON.parse(saved) : [];
+
+  setVoltageOptions([...new Set([...defaultVoltages, ...parsed])]);
+}, []);
+
+useEffect(() => {
+  if (typeof window === "undefined") return;
+
+  const saved = localStorage.getItem("capacities");
+  const parsed = saved ? JSON.parse(saved) : {};
+
+  setCapacityOptionsByVoltage({
+    ...defaultCapacities,
+    ...parsed,
+  });
+}, []);
+
+
+useEffect(() => {
+  if (typeof window === "undefined") return;
+
+  const saved = localStorage.getItem("types");
+  const parsed = saved ? JSON.parse(saved) : [];
+
+  setTypeOptions([...new Set([...defaultTypes, ...parsed])]);
+}, []);
+
 
   const resetForm = () => setForm(initialState);
 

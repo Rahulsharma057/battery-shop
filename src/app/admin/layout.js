@@ -7,12 +7,14 @@ export default function AdminLayout({ children }) {
   const router = useRouter();
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+
     const auth = localStorage.getItem("adminToken");
 
     if (!auth) {
       router.push("/admin/login");
     }
-  }, []);
+  }, [router]);
 
   return <>{children}</>;
 }
