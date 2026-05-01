@@ -36,28 +36,44 @@ export default function BatteryForm({ editData, onSuccess }) {
     warranty: "",
     type: "",
   };
-  const [capacityOptionsByVoltage, setCapacityOptionsByVoltage] = useState({
-    "12V": ["35Ah", "45Ah", "60Ah", "75Ah", "100Ah"],
-    "24V": ["100Ah", "120Ah", "150Ah", "180Ah"],
-    "48V": ["150Ah", "180Ah", "200Ah", "220Ah"],
-  });
-  const [typeOptions, setTypeOptions] = useState([
-    "Tubular",
-    "Flat Plate",
-    "Lithium-ion",
-  ]);
 
   const [newType, setNewType] = useState("");
   const [showAddType, setShowAddType] = useState(false);
   const [newCapacity, setNewCapacity] = useState("");
   const [showAddCapacity, setShowAddCapacity] = useState(false);
   const [form, setForm] = useState(initialState);
-  const [voltageOptions, setVoltageOptions] = useState(["12V", "24V", "48V"]);
+  const defaultVoltages = ["12V", "24V", "48V"];
+  const [voltageOptions, setVoltageOptions] = useState(() => {
+    if (typeof window === "undefined") return defaultVoltages;
+
+    try {
+      const saved = JSON.parse(localStorage.getItem("voltages")) || [];
+      return [...new Set([...defaultVoltages, ...saved])];
+    } catch {
+      return defaultVoltages;
+    }
+  });
+  const defaultCapacities = {
+    "12V": ["35Ah", "45Ah", "60Ah", "75Ah", "100Ah"],
+    "24V": ["100Ah", "120Ah", "150Ah", "180Ah"],
+    "48V": ["150Ah", "180Ah", "200Ah", "220Ah"],
+  };
+  const [capacityOptionsByVoltage, setCapacityOptionsByVoltage] = useState(
+    () => {
+      const saved = JSON.parse(localStorage.getItem("capacities")) || {};
+      return { ...defaultCapacities, ...saved };
+    },
+  );
+  const defaultTypes = ["Tubular", "Flat Plate", "Lithium-ion"];
+  const [typeOptions, setTypeOptions] = useState(() => {
+    const saved = JSON.parse(localStorage.getItem("types")) || [];
+    return [...new Set([...defaultTypes, ...saved])];
+  });
   const [newVoltage, setNewVoltage] = useState("");
   const [showAddVoltage, setShowAddVoltage] = useState(false);
   const capacityOptions = useMemo(() => {
-    return capacityOptionsByVoltage[form.voltage] || [];
-  }, [form.voltage]);
+    return capacityOptionsByVoltage?.[form.voltage] || [];
+  }, [form.voltage, capacityOptionsByVoltage]);
   const [formErrors, setFormErrors] = useState({});
   // ✅ Prefill
   useEffect(() => {
@@ -112,22 +128,31 @@ export default function BatteryForm({ editData, onSuccess }) {
   const handleAddVoltage = () => {
     if (!newVoltage) return;
 
-    const formatted = newVoltage.trim().toUpperCase(); // ✅ normalize
+    const formatted = newVoltage.trim().toUpperCase();
 
     if (voltageOptions.some((v) => v.toUpperCase() === formatted)) {
       toast.error("Voltage already exists ❌");
       return;
     }
 
-    setVoltageOptions((prev) => [...prev, formatted]);
+    const updated = [...voltageOptions, formatted];
+    setVoltageOptions(updated);
+
+    const customVoltages = updated.filter((v) => !defaultVoltages.includes(v));
+    localStorage.setItem("voltages", JSON.stringify(customVoltages));
+
     setNewVoltage("");
     setShowAddVoltage(false);
   };
 
   const handleDeleteVoltage = (value) => {
-    setVoltageOptions((prev) => prev.filter((v) => v !== value));
+    const updated = voltageOptions.filter((v) => v !== value);
+    setVoltageOptions(updated);
 
-    // agar selected same hai to reset
+    const customVoltages = updated.filter((v) => !defaultVoltages.includes(v));
+
+    localStorage.setItem("voltages", JSON.stringify(customVoltages));
+
     if (form.voltage === value) {
       setForm((prev) => ({ ...prev, voltage: "", capacity: "" }));
     }
@@ -143,19 +168,46 @@ export default function BatteryForm({ editData, onSuccess }) {
       return;
     }
 
-    setCapacityOptionsByVoltage((prev) => ({
-      ...prev,
-      [form.voltage]: [...(prev[form.voltage] || []), formatted],
-    }));
+    const updated = {
+      ...capacityOptionsByVoltage,
+      [form.voltage]: [
+        ...(capacityOptionsByVoltage[form.voltage] || []),
+        formatted,
+      ],
+    };
+
+    setCapacityOptionsByVoltage(updated);
+    const customCapacities = {};
+
+    Object.keys(updated).forEach((volt) => {
+      customCapacities[volt] = updated[volt].filter(
+        (c) => !(defaultCapacities[volt] || []).includes(c),
+      );
+    });
+
+    localStorage.setItem("capacities", JSON.stringify(customCapacities));
 
     setNewCapacity("");
     setShowAddCapacity(false);
   };
+
   const handleDeleteCapacity = (voltage, value) => {
-    setCapacityOptionsByVoltage((prev) => ({
-      ...prev,
-      [voltage]: (prev[voltage] || []).filter((c) => c !== value),
-    }));
+    const updated = {
+      ...capacityOptionsByVoltage,
+      [voltage]: capacityOptionsByVoltage[voltage].filter((c) => c !== value),
+    };
+
+    setCapacityOptionsByVoltage(updated);
+
+    const customCapacities = {};
+
+    Object.keys(updated).forEach((volt) => {
+      customCapacities[volt] = updated[volt].filter(
+        (c) => !(defaultCapacities[volt] || []).includes(c),
+      );
+    });
+
+    localStorage.setItem("capacities", JSON.stringify(customCapacities));
 
     if (form.capacity === value) {
       setForm((prev) => ({ ...prev, capacity: "" }));
@@ -172,12 +224,23 @@ export default function BatteryForm({ editData, onSuccess }) {
       return;
     }
 
-    setTypeOptions((prev) => [...prev, formatted]);
+    const updated = [...typeOptions, formatted];
+    setTypeOptions(updated);
+
+    const customTypes = updated.filter((t) => !defaultTypes.includes(t));
+
+    localStorage.setItem("types", JSON.stringify(customTypes));
+
     setNewType("");
     setShowAddType(false);
   };
   const handleDeleteType = (value) => {
-    setTypeOptions((prev) => prev.filter((t) => t !== value));
+    const updated = typeOptions.filter((t) => t !== value);
+    setTypeOptions(updated);
+
+    const customTypes = updated.filter((t) => !defaultTypes.includes(t));
+
+    localStorage.setItem("types", JSON.stringify(customTypes));
 
     if (form.type === value) {
       setForm((prev) => ({ ...prev, type: "" }));
@@ -577,37 +640,37 @@ export default function BatteryForm({ editData, onSuccess }) {
                   value={form.capacity || ""}
                   onChange={handleChange}
                   disabled={!form.voltage}
-                   SelectProps={{
-    renderValue: (selected) => selected || "Select Capacity",
-  }}
+                  SelectProps={{
+                    renderValue: (selected) => selected || "Select Capacity",
+                  }}
                 >
                   <MenuItem value="">Select Capacity</MenuItem>
 
                   {capacityOptions.map((cap) => (
-                <MenuItem key={cap} value={cap}>
-  <Box
-    sx={{
-      display: "flex",
-      justifyContent: "space-between",
-      width: "100%",
-      alignItems: "center",
-    }}
-  >
-    {cap}
+                    <MenuItem key={cap} value={cap}>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          width: "100%",
+                          alignItems: "center",
+                        }}
+                      >
+                        {cap}
 
-    <IconButton
-      size="small"
-      color="error"
-      onClick={(e) => {
-        e.stopPropagation();
-        e.preventDefault(); // ✅ IMPORTANT FIX
-        handleDeleteCapacity(form.voltage, cap);
-      }}
-    >
-      <DeleteIcon fontSize="small" />
-    </IconButton>
-  </Box>
-</MenuItem>
+                        <IconButton
+                          size="small"
+                          color="error"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault(); // ✅ IMPORTANT FIX
+                            handleDeleteCapacity(form.voltage, cap);
+                          }}
+                        >
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
+                      </Box>
+                    </MenuItem>
                   ))}
                 </TextField>
 
