@@ -4,6 +4,7 @@ import { useState, useMemo, useEffect } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 import {
   Box,
@@ -15,6 +16,7 @@ import {
   Paper,
   Stack,
   MenuItem,
+  IconButton,
 } from "@mui/material";
 
 export default function BatteryForm({ editData, onSuccess }) {
@@ -40,13 +42,13 @@ export default function BatteryForm({ editData, onSuccess }) {
     "48V": ["150Ah", "180Ah", "200Ah", "220Ah"],
   });
   const [typeOptions, setTypeOptions] = useState([
-  "Tubular",
-  "Flat Plate",
-  "Lithium-ion",
-]);
+    "Tubular",
+    "Flat Plate",
+    "Lithium-ion",
+  ]);
 
-const [newType, setNewType] = useState("");
-const [showAddType, setShowAddType] = useState(false);
+  const [newType, setNewType] = useState("");
+  const [showAddType, setShowAddType] = useState(false);
   const [newCapacity, setNewCapacity] = useState("");
   const [showAddCapacity, setShowAddCapacity] = useState(false);
   const [form, setForm] = useState(initialState);
@@ -107,57 +109,93 @@ const [showAddType, setShowAddType] = useState(false);
     return Object.keys(errors).length === 0;
   };
 
- const handleAddVoltage = () => {
-  if (!newVoltage) return;
+  const handleAddVoltage = () => {
+    if (!newVoltage) return;
 
-  if (voltageOptions.includes(newVoltage)) {
-    toast.error("Voltage already exists ❌");
-    return;
-  }
+    const formatted = newVoltage.trim().toUpperCase(); // ✅ normalize
 
-  setVoltageOptions((prev) => [...prev, newVoltage]);
-  setNewVoltage("");
-  setShowAddVoltage(false);
-};
+    if (voltageOptions.some((v) => v.toUpperCase() === formatted)) {
+      toast.error("Voltage already exists ❌");
+      return;
+    }
 
- const handleAddCapacity = () => {
-  if (!form.voltage || !newCapacity) return;
+    setVoltageOptions((prev) => [...prev, formatted]);
+    setNewVoltage("");
+    setShowAddVoltage(false);
+  };
 
-  if (capacityOptions.includes(newCapacity)) {
-    toast.error("Capacity already exists ❌");
-    return;
-  }
+  const handleDeleteVoltage = (value) => {
+    setVoltageOptions((prev) => prev.filter((v) => v !== value));
 
-  setCapacityOptionsByVoltage((prev) => ({
-    ...prev,
-    [form.voltage]: [...(prev[form.voltage] || []), newCapacity],
-  }));
+    // agar selected same hai to reset
+    if (form.voltage === value) {
+      setForm((prev) => ({ ...prev, voltage: "", capacity: "" }));
+    }
+  };
 
-  setNewCapacity("");
-  setShowAddCapacity(false);
-};
+  const handleAddCapacity = () => {
+    if (!form.voltage || !newCapacity) return;
 
-const handleAddType = () => {
-  if (!newType) return;
+    const formatted = newCapacity.trim().toUpperCase();
 
-  if (typeOptions.includes(newType)) {
-    toast.error("Type already exists ❌");
-    return;
-  }
+    if (capacityOptions.some((c) => c.toUpperCase() === formatted)) {
+      toast.error("Capacity already exists ❌");
+      return;
+    }
 
-  setTypeOptions((prev) => [...prev, newType]);
-  setNewType("");
-  setShowAddType(false);
-};
+    setCapacityOptionsByVoltage((prev) => ({
+      ...prev,
+      [form.voltage]: [...(prev[form.voltage] || []), formatted],
+    }));
 
+    setNewCapacity("");
+    setShowAddCapacity(false);
+  };
+  const handleDeleteCapacity = (voltage, value) => {
+    setCapacityOptionsByVoltage((prev) => ({
+      ...prev,
+      [voltage]: (prev[voltage] || []).filter((c) => c !== value),
+    }));
+
+    if (form.capacity === value) {
+      setForm((prev) => ({ ...prev, capacity: "" }));
+    }
+  };
+
+  const handleAddType = () => {
+    if (!newType) return;
+
+    const formatted = newType.trim();
+
+    if (typeOptions.some((t) => t.toLowerCase() === formatted.toLowerCase())) {
+      toast.error("Type already exists ❌");
+      return;
+    }
+
+    setTypeOptions((prev) => [...prev, formatted]);
+    setNewType("");
+    setShowAddType(false);
+  };
+  const handleDeleteType = (value) => {
+    setTypeOptions((prev) => prev.filter((t) => t !== value));
+
+    if (form.type === value) {
+      setForm((prev) => ({ ...prev, type: "" }));
+    }
+  };
   const handleChange = (e) => {
     const { name, value } = e.target;
 
     if (name === "voltage") {
       setForm((prev) => ({
         ...prev,
-        voltage: value,
+        voltage: value.toUpperCase(), // ✅ FIX
         capacity: "",
+      }));
+    } else if (name === "capacity") {
+      setForm((prev) => ({
+        ...prev,
+        capacity: value.toUpperCase(), // ✅ FIX
       }));
     } else {
       setForm((prev) => ({
@@ -166,7 +204,6 @@ const handleAddType = () => {
       }));
     }
   };
-
   // ✅ Auto discount
   useEffect(() => {
     const price = Number(form.price);
@@ -472,93 +509,123 @@ const handleAddType = () => {
                 onChange={handleChange}
               />
             </Grid>
-<Grid item xs={6} md={3}>
-  <Box display="flex" gap={1}>
-    <TextField
-      select
-      fullWidth
-      label="Voltage"
-      name="voltage"
-      value={form.voltage}
-      onChange={handleChange}
-    >
-      <MenuItem value="">Select Voltage</MenuItem>
+            <Grid item xs={12} md={6}>
+              <Box display="flex" gap={1}>
+                <TextField
+                  select
+                  fullWidth
+                  label="Voltage"
+                  name="voltage"
+                  value={form.voltage}
+                  onChange={handleChange}
+                >
+                  <MenuItem value="">Select Voltage</MenuItem>
 
-      {voltageOptions.map((v) => (
-        <MenuItem key={v} value={v}>
-          {v}
-        </MenuItem>
-      ))}
-    </TextField>
+                  {voltageOptions.map((v) => (
+                    <MenuItem
+                      key={v}
+                      value={v}
+                      sx={{ display: "flex", justifyContent: "space-between" }}
+                    >
+                      {v}
 
-    <Button
-      variant="outlined"
-      onClick={() => setShowAddVoltage(!showAddVoltage)}
-      sx={{ minWidth: "40px" }}
-    >
-      +
-    </Button>
-  </Box>
+                      <IconButton
+                        size="small"
+                        color="error"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteVoltage(v);
+                        }}
+                      >
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </MenuItem>
+                  ))}
+                </TextField>
 
-  {showAddVoltage && (
-    <Box mt={1} display="flex" gap={1}>
-      <TextField
-        size="small"
-        placeholder="e.g. 36V"
-        value={newVoltage}
-        onChange={(e) => setNewVoltage(e.target.value)}
-      />
-      <Button variant="contained" onClick={handleAddVoltage}>
-        Add
-      </Button>
-    </Box>
-  )}
-</Grid>
-   
-         <Grid item xs={6} md={3}>
-  <Box display="flex" gap={1}>
-    <TextField
-      select
-      fullWidth
-      label="Capacity"
-      name="capacity"
-      value={form.capacity || ""}
-      onChange={handleChange}
-      disabled={!form.voltage}
-    >
-      <MenuItem value="">Select Capacity</MenuItem>
+                <Button
+                  variant="outlined"
+                  onClick={() => setShowAddVoltage(!showAddVoltage)}
+                  sx={{ minWidth: "40px" }}
+                >
+                  +
+                </Button>
+              </Box>
 
-      {capacityOptions.map((cap) => (
-        <MenuItem key={cap} value={cap}>
-          {cap}
-        </MenuItem>
-      ))}
-    </TextField>
+              {showAddVoltage && (
+                <Box mt={1} display="flex" gap={1}>
+                  <TextField
+                    size="small"
+                    placeholder="e.g. 36V"
+                    value={newVoltage}
+                    onChange={(e) => setNewVoltage(e.target.value)}
+                  />
+                  <Button variant="contained" onClick={handleAddVoltage}>
+                    Add
+                  </Button>
+                </Box>
+              )}
+            </Grid>
 
-    <Button
-      variant="outlined"
-      onClick={() => setShowAddCapacity(!showAddCapacity)}
-      sx={{ minWidth: "40px" }}
-    >
-      +
-    </Button>
-  </Box>
+            <Grid item xs={12} md={6}>
+              <Box display="flex" gap={1}>
+                <TextField
+                  select
+                  fullWidth
+                  label="Capacity"
+                  name="capacity"
+                  value={form.capacity || ""}
+                  onChange={handleChange}
+                  disabled={!form.voltage}
+                >
+                  <MenuItem value="">Select Capacity</MenuItem>
 
-  {showAddCapacity && (
-    <Box mt={1} display="flex" gap={1}>
-      <TextField
-        size="small"
-        placeholder="e.g. 110Ah"
-        value={newCapacity}
-        onChange={(e) => setNewCapacity(e.target.value)}
-      />
-      <Button variant="contained" onClick={handleAddCapacity}>
-        Add
-      </Button>
-    </Box>
-  )}
-</Grid>
-            <Grid item xs={6} md={3}>
+                  {capacityOptions.map((cap) => (
+                    <MenuItem
+                      key={cap}
+                      value={cap}
+                      sx={{ display: "flex", justifyContent: "space-between" }}
+                    >
+                      {cap}
+
+                      <IconButton
+                        size="small"
+                        color="error"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteCapacity(form.voltage, cap); // ✅ correct
+                        }}
+                      >
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </MenuItem>
+                  ))}
+                </TextField>
+
+                <Button
+                  variant="outlined"
+                  onClick={() => setShowAddCapacity(!showAddCapacity)}
+                  sx={{ minWidth: "40px" }}
+                >
+                  +
+                </Button>
+              </Box>
+
+              {showAddCapacity && (
+                <Box mt={1} display="flex" gap={1}>
+                  <TextField
+                    size="small"
+                    placeholder="e.g. 110Ah"
+                    value={newCapacity}
+                    onChange={(e) => setNewCapacity(e.target.value)}
+                  />
+                  <Button variant="contained" onClick={handleAddCapacity}>
+                    Add
+                  </Button>
+                </Box>
+              )}
+            </Grid>
+            <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 label="Warranty"
@@ -568,48 +635,63 @@ const handleAddType = () => {
               />
             </Grid>
 
-         <Grid item xs={6} md={3}>
-  <Box display="flex" gap={1}>
-    <TextField
-      select
-      fullWidth
-      label="Type"
-      name="type"
-      value={form.type}
-      onChange={handleChange}
-    >
-      <MenuItem value="">Select Type</MenuItem>
+            <Grid item xs={12} md={6}>
+              <Box display="flex" gap={1}>
+                <TextField
+                  select
+                  fullWidth
+                  label="Type"
+                  name="type"
+                  value={form.type}
+                  onChange={handleChange}
+                >
+                  <MenuItem value="">Select Type</MenuItem>
 
-      {typeOptions.map((t) => (
-        <MenuItem key={t} value={t}>
-          {t}
-        </MenuItem>
-      ))}
-    </TextField>
+                  {typeOptions.map((t) => (
+                    <MenuItem
+                      key={t}
+                      value={t}
+                      sx={{ display: "flex", justifyContent: "space-between" }}
+                    >
+                      {t}
 
-    <Button
-      variant="outlined"
-      onClick={() => setShowAddType(!showAddType)}
-      sx={{ minWidth: "40px" }}
-    >
-      +
-    </Button>
-  </Box>
+                      <IconButton
+                        size="small"
+                        color="error"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteType(t);
+                        }}
+                      >
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </MenuItem>
+                  ))}
+                </TextField>
 
-  {showAddType && (
-    <Box mt={1} display="flex" gap={1}>
-      <TextField
-        size="small"
-        placeholder="e.g. Gel"
-        value={newType}
-        onChange={(e) => setNewType(e.target.value)}
-      />
-      <Button variant="contained" onClick={handleAddType}>
-        Add
-      </Button>
-    </Box>
-  )}
-</Grid>
+                <Button
+                  variant="outlined"
+                  onClick={() => setShowAddType(!showAddType)}
+                  sx={{ minWidth: "40px" }}
+                >
+                  +
+                </Button>
+              </Box>
+
+              {showAddType && (
+                <Box mt={1} display="flex" gap={1}>
+                  <TextField
+                    size="small"
+                    placeholder="e.g. Gel"
+                    value={newType}
+                    onChange={(e) => setNewType(e.target.value)}
+                  />
+                  <Button variant="contained" onClick={handleAddType}>
+                    Add
+                  </Button>
+                </Box>
+              )}
+            </Grid>
 
             <Grid
               item
