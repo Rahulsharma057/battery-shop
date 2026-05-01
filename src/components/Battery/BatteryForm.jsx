@@ -676,7 +676,7 @@ console.log("Capacity Options:", capacityOptions);
   },
 }}
                 >
-                  <MenuItem value="">Select Capacity</MenuItem>
+             {/*      <MenuItem value="">Select Capacity</MenuItem> */}
 
                   {capacityOptions.map((cap) => (
                     <MenuItem key={cap} value={cap}>
