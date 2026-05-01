@@ -34,13 +34,25 @@ export default function BatteryForm({ editData, onSuccess }) {
     warranty: "",
     type: "",
   };
-  const capacityOptionsByVoltage = {
+  const [capacityOptionsByVoltage, setCapacityOptionsByVoltage] = useState({
     "12V": ["35Ah", "45Ah", "60Ah", "75Ah", "100Ah"],
     "24V": ["100Ah", "120Ah", "150Ah", "180Ah"],
     "48V": ["150Ah", "180Ah", "200Ah", "220Ah"],
-  };
+  });
+  const [typeOptions, setTypeOptions] = useState([
+  "Tubular",
+  "Flat Plate",
+  "Lithium-ion",
+]);
 
+const [newType, setNewType] = useState("");
+const [showAddType, setShowAddType] = useState(false);
+  const [newCapacity, setNewCapacity] = useState("");
+  const [showAddCapacity, setShowAddCapacity] = useState(false);
   const [form, setForm] = useState(initialState);
+  const [voltageOptions, setVoltageOptions] = useState(["12V", "24V", "48V"]);
+  const [newVoltage, setNewVoltage] = useState("");
+  const [showAddVoltage, setShowAddVoltage] = useState(false);
   const capacityOptions = useMemo(() => {
     return capacityOptionsByVoltage[form.voltage] || [];
   }, [form.voltage]);
@@ -94,6 +106,49 @@ export default function BatteryForm({ editData, onSuccess }) {
 
     return Object.keys(errors).length === 0;
   };
+
+ const handleAddVoltage = () => {
+  if (!newVoltage) return;
+
+  if (voltageOptions.includes(newVoltage)) {
+    toast.error("Voltage already exists ❌");
+    return;
+  }
+
+  setVoltageOptions((prev) => [...prev, newVoltage]);
+  setNewVoltage("");
+  setShowAddVoltage(false);
+};
+
+ const handleAddCapacity = () => {
+  if (!form.voltage || !newCapacity) return;
+
+  if (capacityOptions.includes(newCapacity)) {
+    toast.error("Capacity already exists ❌");
+    return;
+  }
+
+  setCapacityOptionsByVoltage((prev) => ({
+    ...prev,
+    [form.voltage]: [...(prev[form.voltage] || []), newCapacity],
+  }));
+
+  setNewCapacity("");
+  setShowAddCapacity(false);
+};
+
+const handleAddType = () => {
+  if (!newType) return;
+
+  if (typeOptions.includes(newType)) {
+    toast.error("Type already exists ❌");
+    return;
+  }
+
+  setTypeOptions((prev) => [...prev, newType]);
+  setNewType("");
+  setShowAddType(false);
+};
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -417,51 +472,92 @@ export default function BatteryForm({ editData, onSuccess }) {
                 onChange={handleChange}
               />
             </Grid>
+<Grid item xs={6} md={3}>
+  <Box display="flex" gap={1}>
+    <TextField
+      select
+      fullWidth
+      label="Voltage"
+      name="voltage"
+      value={form.voltage}
+      onChange={handleChange}
+    >
+      <MenuItem value="">Select Voltage</MenuItem>
 
-            <Grid item xs={6} md={3}>
-              <TextField
-                select
-                fullWidth
-                label="Voltage"
-                name="voltage"
-                value={form.voltage || ""}
-                error={!!formErrors.voltage}
-                helperText={formErrors.voltage}
-                onChange={handleChange}
-              >
-                <MenuItem value="">Select Voltage</MenuItem>
-                <MenuItem value="12V">12V</MenuItem>
-                <MenuItem value="24V">24V</MenuItem>
-                <MenuItem value="48V">48V</MenuItem>
-              </TextField>
-            </Grid>
+      {voltageOptions.map((v) => (
+        <MenuItem key={v} value={v}>
+          {v}
+        </MenuItem>
+      ))}
+    </TextField>
 
-            <Grid item xs={6} md={3}>
-              <TextField
-                select
-                fullWidth
-                label="Capacity"
-                name="capacity"
-                value={form.capacity || ""}
-                error={!!formErrors.capacity}
-                onChange={handleChange}
-                helperText={
-                  !form.voltage
-                    ? "Pehle voltage select karein"
-                    : formErrors.capacity
-                }
-                disabled={!form.voltage} // 🔥 disable until voltage selected
-              >
-                <MenuItem value="">Select Capacity</MenuItem>
+    <Button
+      variant="outlined"
+      onClick={() => setShowAddVoltage(!showAddVoltage)}
+      sx={{ minWidth: "40px" }}
+    >
+      +
+    </Button>
+  </Box>
 
-                {capacityOptions.map((cap) => (
-                  <MenuItem key={cap} value={cap}>
-                    {cap}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
+  {showAddVoltage && (
+    <Box mt={1} display="flex" gap={1}>
+      <TextField
+        size="small"
+        placeholder="e.g. 36V"
+        value={newVoltage}
+        onChange={(e) => setNewVoltage(e.target.value)}
+      />
+      <Button variant="contained" onClick={handleAddVoltage}>
+        Add
+      </Button>
+    </Box>
+  )}
+</Grid>
+   
+         <Grid item xs={6} md={3}>
+  <Box display="flex" gap={1}>
+    <TextField
+      select
+      fullWidth
+      label="Capacity"
+      name="capacity"
+      value={form.capacity || ""}
+      onChange={handleChange}
+      disabled={!form.voltage}
+    >
+      <MenuItem value="">Select Capacity</MenuItem>
 
+      {capacityOptions.map((cap) => (
+        <MenuItem key={cap} value={cap}>
+          {cap}
+        </MenuItem>
+      ))}
+    </TextField>
+
+    <Button
+      variant="outlined"
+      onClick={() => setShowAddCapacity(!showAddCapacity)}
+      sx={{ minWidth: "40px" }}
+    >
+      +
+    </Button>
+  </Box>
+
+  {showAddCapacity && (
+    <Box mt={1} display="flex" gap={1}>
+      <TextField
+        size="small"
+        placeholder="e.g. 110Ah"
+        value={newCapacity}
+        onChange={(e) => setNewCapacity(e.target.value)}
+      />
+      <Button variant="contained" onClick={handleAddCapacity}>
+        Add
+      </Button>
+    </Box>
+  )}
+</Grid>
             <Grid item xs={6} md={3}>
               <TextField
                 fullWidth
@@ -472,15 +568,48 @@ export default function BatteryForm({ editData, onSuccess }) {
               />
             </Grid>
 
-            <Grid item xs={6} md={3}>
-              <TextField
-                fullWidth
-                label="Type"
-                name="type"
-                value={form.type}
-                onChange={handleChange}
-              />
-            </Grid>
+         <Grid item xs={6} md={3}>
+  <Box display="flex" gap={1}>
+    <TextField
+      select
+      fullWidth
+      label="Type"
+      name="type"
+      value={form.type}
+      onChange={handleChange}
+    >
+      <MenuItem value="">Select Type</MenuItem>
+
+      {typeOptions.map((t) => (
+        <MenuItem key={t} value={t}>
+          {t}
+        </MenuItem>
+      ))}
+    </TextField>
+
+    <Button
+      variant="outlined"
+      onClick={() => setShowAddType(!showAddType)}
+      sx={{ minWidth: "40px" }}
+    >
+      +
+    </Button>
+  </Box>
+
+  {showAddType && (
+    <Box mt={1} display="flex" gap={1}>
+      <TextField
+        size="small"
+        placeholder="e.g. Gel"
+        value={newType}
+        onChange={(e) => setNewType(e.target.value)}
+      />
+      <Button variant="contained" onClick={handleAddType}>
+        Add
+      </Button>
+    </Box>
+  )}
+</Grid>
 
             <Grid
               item
