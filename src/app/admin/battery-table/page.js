@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState ,useCallback} from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/navigation";
@@ -51,12 +51,12 @@ const BASE_URL = `https://battery-shop-backend-ocb4.onrender.com/api/batteries`;
   const router = useRouter();
 
   useEffect(() => {
-    const token = localStorage.getItem("adminToken");
+  const token = localStorage.getItem("adminToken");
 
-    if (!token) {
-      router.push("/admin/login");
-    }
-  }, []);
+  if (!token) {
+    router.push("/admin/login");
+  }
+}, [router]);
 
 const handleLogout = () => {
   localStorage.removeItem("adminToken"); 
@@ -71,12 +71,11 @@ const handleLogout = () => {
       .includes(search.toLowerCase()),
   );
 
-const fetchData = async () => {
+const fetchData = useCallback(async () => {
   setLoading(true);
 
   try {
     const res = await fetch(BASE_URL);
-    console.log(res);
     const data = await res.json();
     setBatteries(data);
   } catch (err) {
@@ -84,7 +83,7 @@ const fetchData = async () => {
   }
 
   setLoading(false);
-};
+}, []);
 
   useEffect(() => {
     fetchData();

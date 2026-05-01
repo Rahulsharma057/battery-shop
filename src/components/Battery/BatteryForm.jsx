@@ -43,19 +43,9 @@ export default function BatteryForm({ editData, onSuccess }) {
   const [showAddCapacity, setShowAddCapacity] = useState(false);
   const [form, setForm] = useState(initialState);
   const defaultVoltages = ["12V", "24V", "48V"];
- const [voltageOptions, setVoltageOptions] = useState(defaultVoltages);
+const [voltageOptions, setVoltageOptions] = useState(defaultVoltages);
 
 useEffect(() => {
-  useEffect(() => {
-  if (typeof window === "undefined") return;
-
-  try {
-    const saved = JSON.parse(localStorage.getItem("voltages")) || [];
-    setVoltageOptions([...new Set([...defaultVoltages, ...saved])]);
-  } catch {
-    setVoltageOptions(defaultVoltages);
-  }
-}, []);
   try {
     const saved = JSON.parse(localStorage.getItem("voltages")) || [];
     setVoltageOptions([...new Set([...defaultVoltages, ...saved])]);
@@ -68,17 +58,18 @@ useEffect(() => {
     "24V": ["100Ah", "120Ah", "150Ah", "180Ah"],
     "48V": ["150Ah", "180Ah", "200Ah", "220Ah"],
   };
-  const [capacityOptionsByVoltage, setCapacityOptionsByVoltage] = useState(
-    () => {
-      const saved = JSON.parse(localStorage.getItem("capacities")) || {};
-      return { ...defaultCapacities, ...saved };
-    },
-  );
-  const defaultTypes = ["Tubular", "Flat Plate", "Lithium-ion"];
-  const [typeOptions, setTypeOptions] = useState(() => {
-    const saved = JSON.parse(localStorage.getItem("types")) || [];
-    return [...new Set([...defaultTypes, ...saved])];
-  });
+const [capacityOptionsByVoltage, setCapacityOptionsByVoltage] = useState(defaultCapacities);
+
+useEffect(() => {
+  const saved = JSON.parse(localStorage.getItem("capacities")) || {};
+  setCapacityOptionsByVoltage({ ...defaultCapacities, ...saved });
+}, []);
+const [typeOptions, setTypeOptions] = useState(defaultTypes);
+
+useEffect(() => {
+  const saved = JSON.parse(localStorage.getItem("types")) || [];
+  setTypeOptions([...new Set([...defaultTypes, ...saved])]);
+}, []);
   const [newVoltage, setNewVoltage] = useState("");
   const [showAddVoltage, setShowAddVoltage] = useState(false);
   const capacityOptions = useMemo(() => {
