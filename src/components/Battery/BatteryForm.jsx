@@ -43,16 +43,26 @@ export default function BatteryForm({ editData, onSuccess }) {
   const [showAddCapacity, setShowAddCapacity] = useState(false);
   const [form, setForm] = useState(initialState);
   const defaultVoltages = ["12V", "24V", "48V"];
-  const [voltageOptions, setVoltageOptions] = useState(() => {
-    if (typeof window === "undefined") return defaultVoltages;
+ const [voltageOptions, setVoltageOptions] = useState(defaultVoltages);
 
-    try {
-      const saved = JSON.parse(localStorage.getItem("voltages")) || [];
-      return [...new Set([...defaultVoltages, ...saved])];
-    } catch {
-      return defaultVoltages;
-    }
-  });
+useEffect(() => {
+  useEffect(() => {
+  if (typeof window === "undefined") return;
+
+  try {
+    const saved = JSON.parse(localStorage.getItem("voltages")) || [];
+    setVoltageOptions([...new Set([...defaultVoltages, ...saved])]);
+  } catch {
+    setVoltageOptions(defaultVoltages);
+  }
+}, []);
+  try {
+    const saved = JSON.parse(localStorage.getItem("voltages")) || [];
+    setVoltageOptions([...new Set([...defaultVoltages, ...saved])]);
+  } catch {
+    setVoltageOptions(defaultVoltages);
+  }
+}, []);
   const defaultCapacities = {
     "12V": ["35Ah", "45Ah", "60Ah", "75Ah", "100Ah"],
     "24V": ["100Ah", "120Ah", "150Ah", "180Ah"],
