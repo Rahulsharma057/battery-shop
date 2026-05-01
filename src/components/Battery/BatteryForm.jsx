@@ -577,28 +577,37 @@ export default function BatteryForm({ editData, onSuccess }) {
                   value={form.capacity || ""}
                   onChange={handleChange}
                   disabled={!form.voltage}
+                   SelectProps={{
+    renderValue: (selected) => selected || "Select Capacity",
+  }}
                 >
                   <MenuItem value="">Select Capacity</MenuItem>
 
                   {capacityOptions.map((cap) => (
-                    <MenuItem
-                      key={cap}
-                      value={cap}
-                      sx={{ display: "flex", justifyContent: "space-between" }}
-                    >
-                      {cap}
+                <MenuItem key={cap} value={cap}>
+  <Box
+    sx={{
+      display: "flex",
+      justifyContent: "space-between",
+      width: "100%",
+      alignItems: "center",
+    }}
+  >
+    {cap}
 
-                      <IconButton
-                        size="small"
-                        color="error"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteCapacity(form.voltage, cap); // ✅ correct
-                        }}
-                      >
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
-                    </MenuItem>
+    <IconButton
+      size="small"
+      color="error"
+      onClick={(e) => {
+        e.stopPropagation();
+        e.preventDefault(); // ✅ IMPORTANT FIX
+        handleDeleteCapacity(form.voltage, cap);
+      }}
+    >
+      <DeleteIcon fontSize="small" />
+    </IconButton>
+  </Box>
+</MenuItem>
                   ))}
                 </TextField>
 
