@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
@@ -14,6 +14,7 @@ import {
   Grid,
   Paper,
   Stack,
+  MenuItem,
 } from "@mui/material";
 
 export default function BatteryForm({ editData, onSuccess }) {
@@ -33,9 +34,16 @@ export default function BatteryForm({ editData, onSuccess }) {
     warranty: "",
     type: "",
   };
+  const capacityOptionsByVoltage = {
+    "12V": ["35Ah", "45Ah", "60Ah", "75Ah", "100Ah"],
+    "24V": ["100Ah", "120Ah", "150Ah", "180Ah"],
+    "48V": ["150Ah", "180Ah", "200Ah", "220Ah"],
+  };
 
   const [form, setForm] = useState(initialState);
-
+  const capacityOptions = useMemo(() => {
+    return capacityOptionsByVoltage[form.voltage] || [];
+  }, [form.voltage]);
   const [formErrors, setFormErrors] = useState({});
   // ✅ Prefill
   useEffect(() => {
@@ -77,14 +85,31 @@ export default function BatteryForm({ editData, onSuccess }) {
     ) {
       errors.price = "Price cannot be greater than original price";
     }
-
+    if (!form.voltage) errors.voltage = "Voltage is required";
+    if (!form.capacity) errors.capacity = "Capacity is required";
+    if (form.voltage && !form.capacity) {
+      errors.capacity = "Capacity is required";
+    }
     setFormErrors(errors);
 
     return Object.keys(errors).length === 0;
   };
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    if (name === "voltage") {
+      setForm((prev) => ({
+        ...prev,
+        voltage: value,
+        capacity: "",
+      }));
+    } else {
+      setForm((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
 
   // ✅ Auto discount
@@ -94,7 +119,10 @@ export default function BatteryForm({ editData, onSuccess }) {
 
     if (price && original && original > price) {
       const discount = Math.round(((original - price) / original) * 100);
-      setForm((prev) => ({ ...prev, discount }));
+      setForm((prev) => {
+        if (prev.discount === discount) return prev;
+        return { ...prev, discount };
+      });
     } else {
       setForm((prev) => ({ ...prev, discount: 0 }));
     }
@@ -190,18 +218,24 @@ export default function BatteryForm({ editData, onSuccess }) {
       );
 
       // ✅ image file
+      // replace this block
       if (form.image instanceof File) {
         formData.append("image", form.image);
+      } else if (typeof form.image === "string") {
+        formData.append("image", form.image); // existing image URL
       }
       const BASE_URL = `https://battery-shop-backend-ocb4.onrender.com/api/batteries`;
       const url = editData ? `${BASE_URL}/${editData._id}` : BASE_URL;
       const method = editData ? "PUT" : "POST";
 
-      await fetch(url, {
+      const res = await fetch(url, {
         method,
-        body: formData, // ❗ NO headers
+        body: formData,
       });
 
+      if (!res.ok) {
+        throw new Error("Failed");
+      }
       toast.success(editData ? "Updated ✅" : "Added ✅");
 
       resetForm();
@@ -257,8 +291,8 @@ export default function BatteryForm({ editData, onSuccess }) {
                 name="originalPrice"
                 value={form.originalPrice}
                 onChange={handleChange}
-                  error={!!formErrors.originalPrice}
-  helperText={formErrors.originalPrice}
+                error={!!formErrors.originalPrice}
+                helperText={formErrors.originalPrice}
               />
             </Grid>
 
@@ -299,7 +333,10 @@ export default function BatteryForm({ editData, onSuccess }) {
                 InputLabelProps={{ shrink: true }}
                 value={form.offerValidTill}
                 onChange={(e) =>
-                  setForm({ ...form, offerValidTill: e.target.value })
+                  setForm((prev) => ({
+                    ...prev,
+                    offerValidTill: e.target.value,
+                  }))
                 }
                 error={!!formErrors.offerValidTill}
                 helperText={formErrors.offerValidTill}
@@ -333,16 +370,26 @@ export default function BatteryForm({ editData, onSuccess }) {
                     type="file"
                     accept="image/*"
                     onChange={(e) =>
-                      setForm({ ...form, image: e.target.files[0] })
+                      setForm((prev) => ({
+                        ...prev,
+                        image: e.target.files[0],
+                      }))
                     }
                   />
                 </Button>
 
-                {/* Preview */}
                 {form.image && (
-                  <Typography fontSize={12} color="green">
-                    Selected: {form.image.name}
-                  </Typography>
+                  <Box mt={1}>
+                    <img
+                      src={
+                        form.image instanceof File
+                          ? URL.createObjectURL(form.image)
+                          : form.image
+                      }
+                      alt="preview"
+                      style={{ width: 120, borderRadius: 8 }}
+                    />
+                  </Box>
                 )}
               </Stack>
             </Grid>
@@ -361,8 +408,8 @@ export default function BatteryForm({ editData, onSuccess }) {
 
             <Grid item xs={12}>
               <TextField
-              multiline
-              rows={3}
+                multiline
+                rows={3}
                 fullWidth
                 label="Features (comma separated)"
                 name="features"
@@ -373,22 +420,46 @@ export default function BatteryForm({ editData, onSuccess }) {
 
             <Grid item xs={6} md={3}>
               <TextField
+                select
                 fullWidth
                 label="Voltage"
                 name="voltage"
-                value={form.voltage}
+                value={form.voltage || ""}
+                error={!!formErrors.voltage}
+                helperText={formErrors.voltage}
                 onChange={handleChange}
-              />
+              >
+                <MenuItem value="">Select Voltage</MenuItem>
+                <MenuItem value="12V">12V</MenuItem>
+                <MenuItem value="24V">24V</MenuItem>
+                <MenuItem value="48V">48V</MenuItem>
+              </TextField>
             </Grid>
 
             <Grid item xs={6} md={3}>
               <TextField
+                select
                 fullWidth
                 label="Capacity"
                 name="capacity"
-                value={form.capacity}
+                value={form.capacity || ""}
+                error={!!formErrors.capacity}
                 onChange={handleChange}
-              />
+                helperText={
+                  !form.voltage
+                    ? "Pehle voltage select karein"
+                    : formErrors.capacity
+                }
+                disabled={!form.voltage} // 🔥 disable until voltage selected
+              >
+                <MenuItem value="">Select Capacity</MenuItem>
+
+                {capacityOptions.map((cap) => (
+                  <MenuItem key={cap} value={cap}>
+                    {cap}
+                  </MenuItem>
+                ))}
+              </TextField>
             </Grid>
 
             <Grid item xs={6} md={3}>
