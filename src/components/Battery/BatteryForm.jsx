@@ -86,64 +86,6 @@ const capacityOptions = useMemo(() => {
     }
   }, [editData]);
 
-  useEffect(() => {
-  if (currentFilters?.length) {
-    const newState = {
-      entityType: "",
-      companyName: "",
-      contactPersonName: "",
-      ownerName: "",
-      studentStrengthOperator: "EQ",
-      studentStrengthFrom: "",
-      studentStrengthTo: "",
-      createdFrom: "",
-      createdTo: "",
-    };
-
-    currentFilters.forEach((f) => {
-      switch (f.field) {
-        case "entityType":
-          newState.entityType = f.value;
-          break;
-
-        case "companyName":
-          newState.companyName = f.value;
-          break;
-
-        case "contactPersonName":
-          newState.contactPersonName = f.value;
-          break;
-
-        case "ownerName":
-          newState.ownerName = f.value;
-          break;
-
-        case "studentStrength":
-          newState.studentStrengthOperator = f.operator;
-          if (Array.isArray(f.value)) {
-            newState.studentStrengthFrom = f.value[0];
-            newState.studentStrengthTo = f.value[1];
-          } else {
-            newState.studentStrengthFrom = f.value;
-          }
-          break;
-
-        case "createdAt":
-          if (Array.isArray(f.value)) {
-            newState.createdFrom = f.value[0];
-            newState.createdTo = f.value[1];
-          }
-          break;
-
-        default:
-          break;
-      }
-    });
-
-    setFilters(newState);
-  }
-}, [currentFilters]);
-
   const validateForm = () => {
     let errors = {};
 
