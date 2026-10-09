@@ -2,6 +2,7 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
+
 dotenv.config();
 
 const connectDB = require("./config/db");
@@ -19,34 +20,55 @@ connectDB();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Allowed production frontend + Vercel preview deployments
-const allowedOrigins = [
+// Production frontend URL
+const allowedOrigins = new Set([
   "https://battery-shop-wogs.vercel.app",
-];
+]);
+
+// Allow the project's production and preview deployment domains.
+function isAllowedOrigin(origin) {
+  if (allowedOrigins.has(origin)) {
+    return true;
+  }
+
+  try {
+    const url = new URL(origin);
+
+    if (url.protocol !== "https:") {
+      return false;
+    }
+
+    const hostname = url.hostname.toLowerCase();
+
+    // Vercel project deployment URLs:
+    // battery-shop-wogs-git-main-....vercel.app
+    // battery-shop-wogs-....vercel.app
+    // battery-shop-wogs-p1ywk5sr6-rahulsharma057s-projects.vercel.app
+    const isVercelDomain = hostname.endsWith(".vercel.app");
+
+    if (!isVercelDomain) {
+      return false;
+    }
+
+    const projectNameMatches =
+      /^battery-shop-wogs(?:-[a-z0-9-]+)?$/.test(
+        hostname.slice(0, -".vercel.app".length)
+      );
+
+    return projectNameMatches;
+  } catch {
+    return false;
+  }
+}
 
 const corsOptions = {
   origin: (origin, callback) => {
-    // Allow requests without Origin, such as Postman/server-to-server.
+    // Requests without Origin: Postman/server-to-server.
     if (!origin) {
       return callback(null, true);
     }
 
-    // Exact production domain
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    }
-
-    // Allow only this project's Vercel deployment URLs.
-    // Example: battery-shop-wogs-git-main-....vercel.app
-    const isAllowedVercelPreview =
-      /^https:\/\/battery-shop-wogs(?:-[a-z0-9-]+)?-rahulsharma057s-projects\.vercel\.app$/i.test(
-        origin
-      ) ||
-      /^https:\/\/battery-shop-wogs-[a-z0-9-]+\.vercel\.app$/i.test(
-        origin
-      );
-
-    if (isAllowedVercelPreview) {
+    if (isAllowedOrigin(origin)) {
       return callback(null, true);
     }
 
@@ -77,6 +99,7 @@ app.get("/", (req, res) => {
 app.use("/api/admin", authRoutes);
 app.use("/api/batteries", batteryRoutes);
 
+// Error handler
 app.use((err, req, res, next) => {
   if (err.message === "Origin not allowed by CORS") {
     return res.status(403).json({
