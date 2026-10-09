@@ -1,25 +1,11 @@
-"use client";
-import HeroSlider from "@/components/Battery/HeroSlider";
+import Home from "@/components/Home/Home";
 
-import BatteryGrid from "@/components/Battery/BatteryGrid";
-import { Box, Typography } from "@mui/material";
-import AboutSection from "@/components/Battery/AboutSection";
-import ThankYouSection from "@/components/Battery/ThankYouSection";
-export default function Home() {
-  return (
-    <>
-     
+export const metadata = {
+  title: "Chauhan Battery House — Car, Inverter & Lithium Batteries",
+  description:
+    "Shop genuine car, inverter, bike and lithium batteries at the best prices in Khurja, Bulandshahr. Fast delivery, expert support, and warranty on every battery.",
+};
 
-      <HeroSlider />
-      <Typography variant="h4" fontWeight={700} mb={1} mx={4}>
-        Our Products
-        </Typography>
-
-      <Box sx={{ p: 3 }}>
-        <BatteryGrid />
-      </Box>
-      < AboutSection/>
-      <ThankYouSection/>
-    </>
-  );
+export default function Page() {
+  return <Home />;
 }

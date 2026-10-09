@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState ,useCallback} from "react";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/navigation";
 
@@ -37,9 +37,9 @@ import EditIcon from "@mui/icons-material/Edit";
 import BatteryChargingFullIcon from "@mui/icons-material/BatteryChargingFull";
 
 import BatteryForm from "@/components/Battery/BatteryForm";
+import { BATTERIES_URL, authHeaders } from "@/lib/api";
 
 export default function AdminPage() {
-const BASE_URL = `https://battery-shop-backend-ocb4.onrender.com/api/batteries`;
   const [batteries, setBatteries] = useState([]);
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState(null);
@@ -75,7 +75,7 @@ const fetchData = useCallback(async () => {
   setLoading(true);
 
   try {
-    const res = await fetch(BASE_URL);
+    const res = await fetch(BATTERIES_URL);
     const data = await res.json();
     setBatteries(data);
   } catch (err) {
@@ -87,15 +87,18 @@ const fetchData = useCallback(async () => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
 
   const confirmDelete = async () => {
     try {
       setDeletingId(deleteId);
 
-      await fetch(`${BASE_URL}/${deleteId}`, {
+      const res = await fetch(`${BATTERIES_URL}/${deleteId}`, {
         method: "DELETE",
+        headers: authHeaders(),
       });
+
+      if (!res.ok) throw new Error("Delete failed");
 
       toast.success("Battery Deleted 🗑️");
       fetchData();
@@ -565,7 +568,6 @@ const fetchData = useCallback(async () => {
           </Box>
         </Box>
       </Dialog>
-      <ToastContainer position="bottom-left" autoClose={2000} />
     </Box>
   );
 }

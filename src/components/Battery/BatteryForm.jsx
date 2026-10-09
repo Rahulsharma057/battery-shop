@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { BATTERIES_URL, authHeaders } from "@/lib/api";
 
 import {
   Box,
@@ -104,9 +105,6 @@ const capacityOptions = useMemo(() => {
     }
     if (!form.voltage) errors.voltage = "Voltage is required";
     if (!form.capacity) errors.capacity = "Capacity is required";
-    if (form.voltage && !form.capacity) {
-      errors.capacity = "Capacity is required";
-    }
     setFormErrors(errors);
 
     return Object.keys(errors).length === 0;
@@ -310,64 +308,9 @@ const capacityOptions = useMemo(() => {
 
   const resetForm = () => setForm(initialState);
 
-  /*   const handleSubmit = async () => {
-    const data = {
-      name: form.name,
-      price: Number(form.price),
-      originalPrice: Number(form.originalPrice),
-      discount: Number(form.discount) || 0,
-      rating: Number(form.rating) || 0,
-      reviews: Number(form.reviews) || 0,
-      offerValidTill: form.offerValidTill,
-      image: form.image,
-      description: form.description,
-      features: form.features ? form.features.split(",") : [],
-      specs: {
-        voltage: form.voltage,
-        capacity: form.capacity,
-        warranty: form.warranty,
-        type: form.type,
-      },
-    };
-
-    try {
-      const BASE_URL = "https://battery-shop-backend-ocb4.onrender.com/api/batteries";
-
-      const url = editData ? `${BASE_URL}/${editData._id}` : BASE_URL;
-
-      const method = editData ? "PUT" : "POST";
-
-      await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-
-      // ✅ SUCCESS TOAST
-      toast.success(
-        editData
-          ? "Battery Updated sucessfully ✅ "
-          : "Battery Added sucessfully ✅",
-      );
-
-      resetForm();
-
-      // 👉 Close dialog + refresh
-      if (onSuccess) onSuccess();
-    } catch (err) {
-      console.log(err);
-
-      // ❌ ERROR TOAST
-      toast.error("Something went wrong ❌");
-    }
-  }; */
-
-  console.log("Voltage:", form.voltage);
-console.log("Capacity Options:", capacityOptions);
-
   const handleSubmit = async () => {
     if (!validateForm()) {
-      toast.error("Please fill required fields errors ❌");
+      toast.error("Please fill required fields ❌");
       return;
     }
     try {
@@ -401,31 +344,31 @@ console.log("Capacity Options:", capacityOptions);
       );
 
       // ✅ image file
-      // replace this block
       if (form.image instanceof File) {
         formData.append("image", form.image);
-      } else if (typeof form.image === "string") {
+      } else if (typeof form.image === "string" && form.image) {
         formData.append("image", form.image); // existing image URL
       }
-      const BASE_URL = `https://battery-shop-backend-ocb4.onrender.com/api/batteries`;
-      const url = editData ? `${BASE_URL}/${editData._id}` : BASE_URL;
+
+      const url = editData ? `${BATTERIES_URL}/${editData._id}` : BATTERIES_URL;
       const method = editData ? "PUT" : "POST";
 
       const res = await fetch(url, {
         method,
+        headers: authHeaders(),
         body: formData,
       });
 
       if (!res.ok) {
-        throw new Error("Failed");
+        const errBody = await res.json().catch(() => null);
+        throw new Error(errBody?.message || "Failed");
       }
       toast.success(editData ? "Updated ✅" : "Added ✅");
 
       resetForm();
       if (onSuccess) onSuccess();
     } catch (err) {
-      console.log(err);
-      toast.error("Upload failed ❌");
+      toast.error(err.message || "Upload failed ❌");
     }
   };
 

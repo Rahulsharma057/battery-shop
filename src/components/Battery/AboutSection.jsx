@@ -12,7 +12,7 @@ export default function AboutSection() {
           <Grid item xs={12} md={6}>
             <Box
               component="img"
-              src="images/IMAGE4.png"
+              src="/images/IMAGE4.png"
               alt="Battery Shop"
               sx={{
                 width: "100%",

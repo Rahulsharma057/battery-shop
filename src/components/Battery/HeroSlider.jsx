@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import {
   Box,
   MobileStepper,
@@ -15,17 +16,15 @@ import "swiper/css";
 const images = [
   {
     label: "Power Your Drive",
-    imgPath:
-       "images/image1.png",
+    imgPath: "/images/image1.png",
   },
   {
     label: "Inverter Backup Sale",
-    imgPath:
-      "images/IMAGE2.png",},
+    imgPath: "/images/IMAGE2.png",
+  },
   {
     label: "Lithium Power",
-    imgPath:
-      "/images/IMAGE3.png",
+    imgPath: "/images/IMAGE3.png",
   },
 ];
 
@@ -56,17 +55,28 @@ export default function HeroCarousel() {
         >
           {images.map((step, index) => (
             <SwiperSlide key={index}>
-              <img
-                src={step.imgPath}
-                style={{
+              <Box
+                sx={{
+                  position: "relative",
                   width: "100%",
                   height: isMobile ? 180 : 400,
-                  objectFit: "cover",
-                  objectPosition:"100% 58%",
-                  backgroundColor:"rgb(23, 76, 18)",
-                  borderRadius: 12,
+                  borderRadius: "12px",
+                  overflow: "hidden",
+                  bgcolor: "rgb(23, 76, 18)",
                 }}
-              />
+              >
+                <Image
+                  src={step.imgPath}
+                  alt={step.label}
+                  fill
+                  priority={index === 0}
+                  sizes="100vw"
+                  style={{
+                    objectFit: "cover",
+                    objectPosition: "100% 58%",
+                  }}
+                />
+              </Box>
             </SwiperSlide>
           ))}
         </Swiper>

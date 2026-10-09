@@ -15,7 +15,7 @@ import { useState } from "react";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import PhoneIcon from "@mui/icons-material/Phone";
 import EmailIcon from "@mui/icons-material/Email";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 
 export default function ContactPage() {
   const [name, setName] = useState("");
@@ -178,7 +178,7 @@ Message: ${message}`;
                   }}
                 >
                   <Avatar
-                    src="images/satenrasinghchauhan.jpeg"
+                    src="/images/satenrasinghchauhan.jpeg"
                     sx={{
                       width: 55,
                       height: 55,
@@ -278,7 +278,6 @@ Message: ${message}`;
           </Grid>
         </Grid>
       </Container>
-      <ToastContainer position="bottom-left" autoClose={2000} />
     </Box>
   );
 }

@@ -1,36 +1,49 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Chauhan Battery House
 
-## Getting Started
+Next.js 14 (App Router) storefront + admin panel for a battery shop, backed by an Express/MongoDB API with Cloudinary image uploads.
 
-First, run the development server:
+## Project layout
+
+- `src/app` — pages (home, batteries, blog, about, contact, admin)
+- `src/components` — UI components, grouped by feature
+- `src/context/CartContext.jsx` — client-side cart (persisted to localStorage), checkout happens via a WhatsApp message since there's no payment gateway
+- `src/lib/api.js` — single source of truth for the backend base URL and admin auth headers
+- `backend/` — Express API (auth, battery CRUD, Cloudinary upload)
+
+## Frontend setup
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Set `NEXT_PUBLIC_API_URL` in `.env.local` to point at your backend (defaults to the deployed Render URL if unset).
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## Backend setup
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+cd backend
+npm install
+npm run dev   # nodemon
+```
 
-## Learn More
+Required environment variables in `backend/.env` (see `backend/.env` for the current values, **not committed to git**):
 
-To learn more about Next.js, take a look at the following resources:
+| Variable | Purpose |
+|---|---|
+| `PORT` | Port the API listens on |
+| `MONGO_URI` | MongoDB Atlas connection string |
+| `CLOUD_NAME`, `API_KEY`, `API_SECRET` | Cloudinary credentials for image upload |
+| `JWT_SECRET` | Signs admin auth tokens — the server **will not start** without this |
+| `ADMIN_EMAIL`, `ADMIN_PASSWORD` | Admin login credentials |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The server throws on boot if `JWT_SECRET`, `ADMIN_EMAIL`, or `ADMIN_PASSWORD` are missing — **when deploying (e.g. Render), these must be added to that platform's environment variables**, not just the local `.env` file.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Auth
 
-## Deploy on Vercel
+`POST /api/admin/login` issues a JWT. `POST/PUT/DELETE /api/batteries*` require `Authorization: Bearer <token>`; `GET` endpoints stay public.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Known follow-ups
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Rotate `MONGO_URI` and `API_SECRET` — these were previously committed to git history in older commits.
+- Cloudinary `API_SECRET` is currently a placeholder value; uploads will fail until it's set to a real secret.

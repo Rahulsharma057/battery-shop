@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -20,26 +20,32 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import StarIcon from "@mui/icons-material/Star";
 import BoltIcon from "@mui/icons-material/Bolt";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import { toast } from "react-toastify";
+import { useCart } from "@/context/CartContext";
 
 export default function BatteryModal({ open, handleClose, battery }) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const { addToCart } = useCart();
 
   const [liked, setLiked] = useState(false);
-  const [likeCount, setLikeCount] = useState(128);
-  const [addedToCart, setAddedToCart] = useState(false);
+
+  // reset per-battery UI state whenever a different battery is opened
+  useEffect(() => {
+    setLiked(false);
+  }, [battery?._id]);
 
   if (!battery) return null;
 
-  const handleLike = () => {
-    setLiked((prev) => !prev);
-    setLikeCount((prev) => (liked ? prev - 1 : prev + 1));
+  const handleAddToCart = () => {
+    addToCart(battery, 1);
+    toast.success("Added to cart ✅");
   };
 
-/*   const handleBuy = () => {
-    setAddedToCart(true);
-    setTimeout(() => setAddedToCart(false), 2000);
-  }; */
+  const handleLike = () => {
+    setLiked((prev) => !prev);
+  };
 
   const handleOrder = () => {
   const text = `🛒 * New Order Request :- *
@@ -239,12 +245,22 @@ ${Object.entries(battery.specs)
               <Button
                 fullWidth
                 variant="outlined"
+                startIcon={<ShoppingCartIcon fontSize="small" />}
                 size={isMobile ? "small" : "medium"}
-                onClick={handleClose}
+                onClick={handleAddToCart}
               >
-                Close
+                Add to Cart
               </Button>
             </Box>
+            <Button
+              fullWidth
+              variant="text"
+              size="small"
+              sx={{ mt: 1 }}
+              onClick={handleClose}
+            >
+              Close
+            </Button>
           </Box>
         </Box>
       </DialogContent>

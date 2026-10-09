@@ -1,5 +1,5 @@
 const Battery = require("../models/Battery");
-console.log("🔥 API HIT");
+
 /* ---------------- FEATURES ---------------- */
 const parseFeatures = (features) => {
   if (!features) return [];
@@ -56,8 +56,26 @@ const getImage = (req) => {
   return "";
 };
 
+const validateBatteryInput = (body) => {
+  if (!body.name || !String(body.name).trim()) return "Name is required";
+  if (body.price === undefined || Number.isNaN(Number(body.price)) || Number(body.price) < 0)
+    return "Valid price is required";
+  if (
+    body.originalPrice !== undefined &&
+    body.originalPrice !== "" &&
+    (Number.isNaN(Number(body.originalPrice)) || Number(body.originalPrice) < 0)
+  )
+    return "Original price must be a valid number";
+  return null;
+};
+
 const addBattery = async (req, res) => {
   try {
+    const validationError = validateBatteryInput(req.body);
+    if (validationError) {
+      return res.status(400).json({ message: validationError });
+    }
+
     const battery = new Battery({
       name: req.body.name,
       price: req.body.price,
@@ -77,16 +95,18 @@ const addBattery = async (req, res) => {
     const saved = await battery.save();
     res.json(saved);
   } catch (err) {
-    console.log("❌ ADD ERROR:", err);
+    console.error("ADD BATTERY ERROR:", err.message);
     res.status(500).json({ message: err.message });
   }
 };
 /* ---------------- UPDATE ---------------- */
 const updateBattery = async (req, res) => {
-  console.log("👉 PARAM ID:", req.params.id);
-  console.log("👉 BODY:", req.body);
-  console.log("👉 FILE:", req.file);
   try {
+    const validationError = validateBatteryInput(req.body);
+    if (validationError) {
+      return res.status(400).json({ message: validationError });
+    }
+
     const updateData = {
       name: req.body.name,
       price: req.body.price,
@@ -118,7 +138,7 @@ const updateBattery = async (req, res) => {
 
     res.json(updated);
   } catch (err) {
-    console.error("❌ UPDATE ERROR FULL:", err);
+    console.error("UPDATE BATTERY ERROR:", err.message);
     res.status(500).json({ message: err.message || "Update failed" });
   }
 };

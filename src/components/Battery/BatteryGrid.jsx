@@ -1,35 +1,55 @@
 "use client";
 
 import Grid from "@mui/material/Unstable_Grid2";
+import { Box, CircularProgress, Typography } from "@mui/material";
 import { useState, useEffect } from "react";
 import BatteryCard from "./BatteryCard";
 import BatteryModal from "./BatteryModal";
+import { BATTERIES_URL } from "@/lib/api";
 
-export default function BatteryGrid() {
+export default function BatteryGrid({ limit } = {}) {
   const [batteries, setBatteries] = useState([]);
   const [selected, setSelected] = useState(null);
-  const BASE_URL = `https://battery-shop-backend-ocb4.onrender.com/api/batteries`;
-console.log(process.env.NEXT_PUBLIC_API_URL);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch(BASE_URL);
+        const res = await fetch(BATTERIES_URL);
         const data = await res.json();
-
-
-        console.log("🔥 API DATA:", data);
         setBatteries(data);
       } catch (err) {
-        console.log("❌ FETCH ERROR:", err);
+        console.error("Failed to load batteries:", err);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchData();
-  }, [BASE_URL]); 
+  }, []);
+
+  const visible = limit ? batteries.slice(0, limit) : batteries;
+
+  if (loading) {
+    return (
+      <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (visible.length === 0) {
+    return (
+      <Box textAlign="center" py={5}>
+        <Typography color="text.secondary">No batteries found 😢</Typography>
+      </Box>
+    );
+  }
+
   return (
     <>
       <Grid container spacing={3}>
-        {batteries.map((battery) => (
+        {visible.map((battery) => (
           <Grid xs={6} sm={6} md={3} key={battery._id}>
             <BatteryCard
               battery={battery}

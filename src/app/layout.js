@@ -1,37 +1,22 @@
-"use client";
+import { CartProvider } from "@/context/CartContext";
+import ClientShell from "@/components/ClientShell";
 
-import { ThemeProvider, createTheme } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
-import { usePathname } from "next/navigation";
-
-import Navbar from "@/components/Battery/Navbar";
-import Footer from "@/components/Battery/Footer";
-
-const theme = createTheme({
-  palette: {},
-});
+export const metadata = {
+  title: {
+    default: "Chauhan Battery House",
+    template: "%s | Chauhan Battery House",
+  },
+  description:
+    "Chauhan Battery House, Khurja — car, inverter, bike and lithium batteries at the best prices with genuine warranty.",
+};
 
 export default function RootLayout({ children }) {
-  const pathname = usePathname();
-
-  const isAdmin = pathname.startsWith("/admin");
-
   return (
     <html lang="en">
       <body>
-        <ThemeProvider theme={theme}>
-          
-          {/* ❌ Admin me Navbar hide */}
-          {!isAdmin && <Navbar />}
-
-          <CssBaseline />
-
-          {children}
-
-          {/* ❌ Admin me Footer hide */}
-          {!isAdmin && <Footer />}
-
-        </ThemeProvider>
+        <CartProvider>
+          <ClientShell>{children}</ClientShell>
+        </CartProvider>
       </body>
     </html>
   );

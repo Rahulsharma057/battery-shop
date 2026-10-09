@@ -13,17 +13,23 @@ import {
   Box,
   useMediaQuery,
   Divider,
+  Badge,
 } from "@mui/material";
 import Link from "next/link";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import BatteryChargingFullIcon from "@mui/icons-material/BatteryChargingFull";
 
 import { useState } from "react";
+import { useCart } from "@/context/CartContext";
+import CartDrawer from "@/components/Cart/CartDrawer";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState("Home");
+  const [cartOpen, setCartOpen] = useState(false);
+  const { totalItems } = useCart();
 
   const isMobile = useMediaQuery("(max-width:768px)");
 
@@ -100,7 +106,13 @@ export default function Navbar() {
 
           {/* 📱 Mobile */}
           {isMobile ? (
-            <>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+              <IconButton aria-label="cart" onClick={() => setCartOpen(true)}>
+                <Badge badgeContent={totalItems} color="success">
+                  <ShoppingCartIcon />
+                </Badge>
+              </IconButton>
+
               <IconButton onClick={() => setOpen(true)}>
                 <MenuIcon />
               </IconButton>
@@ -151,7 +163,7 @@ export default function Navbar() {
                   </List>
                 </Box>
               </Drawer>
-            </>
+            </Box>
           ) : (
             /* 🖥️ Desktop */
             <Box
@@ -204,6 +216,12 @@ export default function Navbar() {
                   </Button>
                 </Link>
               ))}
+              <IconButton aria-label="cart" onClick={() => setCartOpen(true)} sx={{ ml: 1 }}>
+                <Badge badgeContent={totalItems} color="success">
+                  <ShoppingCartIcon />
+                </Badge>
+              </IconButton>
+
               <Link href="/admin/login" style={{ textDecoration: "none" }}>
                 <Button
                   variant="contained"
@@ -229,6 +247,8 @@ export default function Navbar() {
           )}
         </Toolbar>
       </AppBar>
+
+      <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
     </>
   );
 }

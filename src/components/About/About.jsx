@@ -60,7 +60,7 @@ export default function AboutPage() {
               }}
             >
               <Avatar
-                src="images/manvendra chuhan.jpeg"
+                src="/images/manvendra chuhan.jpeg"
                 sx={{ width: 60, height: 60 }}
               />
 

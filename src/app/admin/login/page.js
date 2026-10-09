@@ -17,6 +17,7 @@ import ElectricBoltIcon from "@mui/icons-material/ElectricBolt";
 import EmailIcon from "@mui/icons-material/Email";
 import LockIcon from "@mui/icons-material/Lock";
 import BatteryChargingFullIcon from "@mui/icons-material/BatteryChargingFull";
+import { LOGIN_URL } from "@/lib/api";
 
 export default function AdminLogin() {
   const router = useRouter();
@@ -34,16 +35,13 @@ export default function AdminLogin() {
   setLoading(true);
 
   try {
-    const res = await fetch(
-      "https://battery-shop-backend-ocb4.onrender.com/api/admin/login",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      }
-    );
+    const res = await fetch(LOGIN_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
 
     const data = await res.json();
 
