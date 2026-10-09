@@ -15,17 +15,14 @@ if (!process.env.ADMIN_EMAIL || !process.env.ADMIN_PASSWORD) {
   throw new Error("ADMIN_EMAIL / ADMIN_PASSWORD missing in env");
 }
 
-connectDB();
-
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Production frontend URL
+// Only your production frontend and this project's Vercel deployments
 const allowedOrigins = new Set([
   "https://battery-shop-wogs.vercel.app",
 ]);
 
-// Allow the project's production and preview deployment domains.
 function isAllowedOrigin(origin) {
   if (allowedOrigins.has(origin)) {
     return true;
@@ -35,56 +32,66 @@ function isAllowedOrigin(origin) {
     const url = new URL(origin);
 
     if (url.protocol !== "https:") {
-      return false;
+      // Permit local development separately.
+      return (
+        url.origin === "http://localhost:3000" ||
+        url.origin === "http://localhost:3001"
+      );
     }
 
     const hostname = url.hostname.toLowerCase();
 
-    // Vercel project deployment URLs:
-    // battery-shop-wogs-git-main-....vercel.app
-    // battery-shop-wogs-....vercel.app
+    // Allow deployments belonging to this Vercel project only.
+    // Examples:
+    // battery-shop-wogs-git-main-rahulsharma057s-projects.vercel.app
     // battery-shop-wogs-p1ywk5sr6-rahulsharma057s-projects.vercel.app
-    const isVercelDomain = hostname.endsWith(".vercel.app");
-
-    if (!isVercelDomain) {
-      return false;
-    }
-
-    const projectNameMatches =
-      /^battery-shop-wogs(?:-[a-z0-9-]+)?$/.test(
-        hostname.slice(0, -".vercel.app".length)
-      );
-
-    return projectNameMatches;
+    // battery-shop-wogs-<deployment-id>.vercel.app
+    return (
+      /^battery-shop-wogs(?:-[a-z0-9-]+)?\.vercel\.app$/.test(
+        hostname
+      )
+    );
   } catch {
     return false;
   }
 }
 
 const corsOptions = {
-  origin: (origin, callback) => {
-    // Requests without Origin: Postman/server-to-server.
+  origin(origin, callback) {
+    // Requests without Origin, such as server-to-server requests.
     if (!origin) {
       return callback(null, true);
     }
 
     if (isAllowedOrigin(origin)) {
+      console.log("[CORS ALLOWED]", origin);
       return callback(null, true);
     }
 
-    return callback(new Error("Origin not allowed by CORS"));
+    console.warn("[CORS BLOCKED]", origin);
+
+    // Do not throw an error that hides the actual route response.
+    return callback(null, false);
   },
 
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
   optionsSuccessStatus: 204,
+  maxAge: 86400,
 };
 
+// CORS middleware must run before routes and body parsers.
 app.use(cors(corsOptions));
+
+// Explicit preflight handling for Express 4.
+app.options("*", cors(corsOptions));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Connect database and handle connection failures in your DB module.
+connectDB();
 
 const authRoutes = require("./routes/authRoutes");
 const batteryRoutes = require("./routes/batteryRoutes");
@@ -99,16 +106,16 @@ app.get("/", (req, res) => {
 app.use("/api/admin", authRoutes);
 app.use("/api/batteries", batteryRoutes);
 
-// Error handler
+// Handle unexpected application errors.
 app.use((err, req, res, next) => {
-  if (err.message === "Origin not allowed by CORS") {
-    return res.status(403).json({
-      success: false,
-      message: "Origin not allowed by CORS",
-    });
-  }
+  console.error(
+    "[API ERROR]",
+    err?.stack || err
+  );
 
-  console.error("UNHANDLED ERROR:", err?.stack || err);
+  if (res.headersSent) {
+    return next(err);
+  }
 
   res.status(500).json({
     success: false,
@@ -116,6 +123,6 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Express API running on port ${PORT}`);
 });
