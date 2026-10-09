@@ -5,6 +5,7 @@ import BatteryGrid from "@/components/Battery/BatteryGrid";
 import { Box, Typography, Button } from "@mui/material";
 import Link from "next/link";
 import AboutSection from "@/components/Battery/AboutSection";
+import PromotionsSection from "@/components/Battery/PromotionsSection";
 import ThankYouSection from "@/components/Battery/ThankYouSection";
 
 export default function Home() {
@@ -39,6 +40,7 @@ export default function Home() {
         <BatteryGrid limit={8} />
       </Box>
       <AboutSection />
+      <PromotionsSection />
       <ThankYouSection />
     </>
   );
